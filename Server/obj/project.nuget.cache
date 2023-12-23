@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "XZGwHxRggbhucga137kKpbyCUx0PILrn6xHpyaYr5LYyf7blejC7i6yAh78TyxXIWT8VTiIoUK6Cq6Ftz9EkrQ==",
+  "dgSpecHash": "nB9swWefSSOfT/BxKTlii9KkQEVXwyVrERED85vneRc6mQbpLQk0288iHH/nCXnYRj7kpcmhj7iqKEFxBlB3Fg==",
   "success": true,
   "projectFilePath": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\Server.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\nenad\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\nenad\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\5.0.0\\microsoft.bcl.asyncinterfaces.5.0.0.nupkg.sha512",
     "C:\\Users\\nenad\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.0\\microsoft.entityframeworkcore.8.0.0.nupkg.sha512",
     "C:\\Users\\nenad\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.0\\microsoft.entityframeworkcore.abstractions.8.0.0.nupkg.sha512",

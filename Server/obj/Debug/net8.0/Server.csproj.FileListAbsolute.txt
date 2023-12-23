@@ -36,3 +36,4 @@ C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\Server\obj\Debug\net8.0\Server.ge
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\Server\obj\Debug\net8.0\ref\Server.dll
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\Server\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\Server\bin\Debug\net8.0\Neo4j.Driver.dll
+C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\Server\bin\Debug\net8.0\BCrypt.Net-Next.dll

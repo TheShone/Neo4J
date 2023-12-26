@@ -131,7 +131,7 @@ public class AdminController:ControllerBase
                 }
                 else
                 {
-                    return BadRequest("Greska prilikom dodavanja Admin");
+                    return BadRequest("Greska prilikom pribavljanju Admina");
                 }
             }
         }

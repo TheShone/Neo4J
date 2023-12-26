@@ -12,9 +12,11 @@ namespace Models
 
         public required Zanr Zanr {get; set;}
 
-        public required Izdavac Izdavac{get; set;}
+        public  required Izdavac Izdavac{get; set;}
 
-        public required Pisac Pisac{get; set;}
+        public  required Pisac Pisac{get; set;}
+
+        public int BrojnoStanje {get; set;}
 
         public List<Citalac>? Citaoci{get; set;}
 
@@ -24,6 +26,5 @@ namespace Models
 
         public List<Izdavanje>? Izdata{get; set;}
 
-        public int BrojnoStanje {get; set;}
     }
 }

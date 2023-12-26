@@ -143,8 +143,8 @@ namespace Controllers;
                         if (records.Count > 0)
                         {
                             var record = records[0];
-                            var id = record["a"].As<INode>().Id; 
-                            var nodeProperties = record["a"].As<INode>().Properties; 
+                            var id = record["c"].As<INode>().Id; 
+                            var nodeProperties = record["c"].As<INode>().Properties; 
                             var resultDictionary = new Dictionary<string, object>(nodeProperties)
                             {
                                 { "id", id }

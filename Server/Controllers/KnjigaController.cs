@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic;
 using Neo4j.Driver;
 
 namespace Controllers;
@@ -31,6 +30,31 @@ namespace Controllers;
                         var parameters = new { naslov = Knjiga.Naslov,  brojSTrana= Knjiga.BrojStrana };
 
                         var cursor =  await tx.RunAsync(query, parameters);
+                        var resultatList = await cursor.ToListAsync();
+                        if(resultatList.Count>0)
+                        {
+                            var record = resultatList[0];
+                            var createdNodeId = record["k"].As<INode>().Id;
+                            if (Knjiga.Zanr != null)
+                            {
+                                var relationQuery = "MATCH (k:Knjiga), (z:Zanr) WHERE ID(k) = $knjigaId AND z.Naziv = $naziv MERGE (k)-[:PRIPADA_ZANRU]->(z)";
+                                var relationParameters = new { knjigaId = createdNodeId, naziv = Knjiga.Zanr.Naziv };
+                                await tx.RunAsync(relationQuery, relationParameters);
+                            }
+                            if(Knjiga.Izdavac!= null)
+                            {
+                                var relationQuery = "MATCH (k:Knjiga), (i:Izdavac) WHERE ID(k) = $knjigaId AND i.Naziv = $naziv MERGE (k)-[:IZDATA_OD_STRANE]->(i)";
+                                var relationParameters = new { knjigaId = createdNodeId, naziv = Knjiga.Izdavac.Naziv };
+                                await tx.RunAsync(relationQuery, relationParameters);
+                            }
+                            if(Knjiga.Pisac!= null)
+                            {
+                                var relationQuery = "MATCH (k:Knjiga), (p:Pisac) WHERE ID(k) = $knjigaId AND p.Prezime = $prezime AND p.Ime=$ime MERGE (k)-[:NAPISANA_OD_STRANE]->(p)";
+                                var relationParameters = new { knjigaId = createdNodeId, prezime = Knjiga.Pisac.Prezime,ime=Knjiga.Pisac.Ime };
+                                await tx.RunAsync(relationQuery, relationParameters);
+                            }
+                        }
+                        
                         return cursor;
                     });
                     if (result != null)
@@ -82,7 +106,7 @@ namespace Controllers;
                 return BadRequest(ex.Message);
             }
         }
-        [Route("GetKnjigu")]
+        [Route("GetKnjigu/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetKnjigu(int id)
         {

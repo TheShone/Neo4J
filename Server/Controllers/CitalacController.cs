@@ -13,7 +13,7 @@ namespace Controllers;
         }
         [Route("AddCitaoca")]
         [HttpPost]
-        public async Task<IActionResult> AddKnjigu([FromBody] Citalac Citalac)
+        public async Task<IActionResult> AddCitaoca([FromBody] Citalac Citalac)
         {
             try{
                 if(Citalac.Ime.Length<=0)
@@ -94,6 +94,82 @@ namespace Controllers;
                 }
             }
             catch(Exception ex){
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("DeleteCitaoca/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCitaoca(int id)
+        {
+            try{
+                using( var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteWriteAsync(async tx=>
+                    {
+                        var query = "Match (c:Citalac) WHERE id(c)=$id delete c";
+                        var parameters = new {id};
+                        var cursor = await tx.RunAsync(query,parameters);
+                        return cursor;
+                    });
+                    if (result != null)
+                    {
+                        return Ok("Citalac uspešno obrisan.");
+                    }
+                    else
+                    {
+                        return BadRequest("Neuspešno brisanje citaoca.");
+                    }
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCitaoca/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetCitaoca(int id)
+        {
+            try{
+                using( var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteReadAsync(async tx=>
+                    {
+                        var query = "Match (c:Citalac) WHERE id(c)=$id return c";
+                        var parameters = new {id};
+                        var cursor = await tx.RunAsync(query,parameters);
+                        var records = await cursor.ToListAsync(); // Materialize the result
+                        if (records.Count > 0)
+                        {
+                            var record = records[0];
+                            var id = record["a"].As<INode>().Id; 
+                            var nodeProperties = record["a"].As<INode>().Properties; 
+                            var resultDictionary = new Dictionary<string, object>(nodeProperties)
+                            {
+                                { "id", id }
+                            };
+
+                            return resultDictionary;
+                        }
+                        else
+                        {
+                            return null; 
+                        }
+                    });
+                    if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Neuspešno brisanje citaoca.");
+                    }
+                }
+                
+            }
+            catch(Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }

@@ -24,21 +24,30 @@ namespace Controllers;
                     ModelState.AddModelError("KorisnickoIme","Korisnicko ime mora da ima vecu duzinu od 0");
                 if(Citalac.Email.Length<=0|| Regex.IsMatch(Citalac.Email,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")==false)
                     ModelState.AddModelError("Email","Email ne moze da bude prazan i mora da bude u formatu emaila");
-                if(Citalac.Sifra.Length<=0)
+                if(Citalac.Sifra.Length<=8)
                     ModelState.AddModelError("Sifra","Sifra mora da bude veca od 0");
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                    return BadRequest("ModelState");
                 using (var session = _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        string sifra= BCrypt.Net.BCrypt.HashPassword(Citalac.Sifra,10);
-                        Citalac.Sifra=sifra;
-                        var query = "CREATE (c:Citalac {ime: $ime, prezime: $prezime, korisnickoIme: $korisnickoIme, email:$email, sifra: $sifra, datumRodjenja: $datumRodjenja, slika: $slika}) RETURN c";
-                        var parameters = new { ime = Citalac.Ime,  prezime= Citalac.Prezime, korisnickoIme= Citalac.KorisnickoIme, email = Citalac.Email, sifra=Citalac.Sifra, datumRodjenja=Citalac.DatumRodjenja,  slika=Citalac.Slika};
+                        var query1 = "Match (c:Citalac) WHERE c.Email = $email or c.KorisnickoIme=$korisnicko RETURN c";
+                        var parameters1 = new { email=Citalac.Email,  korisnicko=Citalac.KorisnickoIme};
+                        var cursor1 =  await tx.RunAsync(query1, parameters1);
+                        var resultatList= await cursor1.ToListAsync();
+                        if(resultatList.Count==0)
+                        {
+                            string sifra= BCrypt.Net.BCrypt.HashPassword(Citalac.Sifra,10);
+                            Citalac.Sifra=sifra;
+                            var query = "CREATE (c:Citalac) SET c=$citaoc RETURN c";
+                            var parameters = new { citaoc=Citalac};
 
-                        var cursor =  await tx.RunAsync(query, parameters);
-                        return cursor;
+                            var cursor =  await tx.RunAsync(query, parameters);
+                            return cursor;
+                        }
+                        else
+                            return null;
                     });
                     if (result != null)
                     {
@@ -46,7 +55,7 @@ namespace Controllers;
                     }
                     else
                     {
-                        return BadRequest("Neuspešno dodavanje citaoca u bazu.");
+                        return BadRequest("Vec postoji nalog sa tim korisnickim imenom ili emailom");
                     }
                 }
             }

@@ -1,5 +1,27 @@
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "./UserContext";
+import Cookies from "js-cookie";
+
 const Header = () => {
+  const config = {
+    headers: { Authorization: `Bearer ${Cookies.get("Token")}` },
+  };
+  const { ready, user, setUser } = useContext(UserContext);
+  const [redirect, setRedirect] = useState(null);
+  
+  const handleLogout = async () => {
+    axios
+      .post("/Login/LogOut", {}, config)
+      .then(() => {
+        setUser(null);
+        setRedirect("/");
+      })
+      .catch((err) => {
+        console.log("Error:" + err.message);
+      });
+  };
   return (
     <header id="header" class="fixed-top ">
     <div class="container d-flex align-items-center justify-content-lg-between my-1">
@@ -12,8 +34,8 @@ const Header = () => {
           <li><a class="nav-link scrollto active" ><Link to="/knjige">Knjige</Link></a></li>
           <li><a class="nav-link scrollto" >Iznajmljene</a></li>
           <li><a class="nav-link scrollto" ><Link to="/registration">Register</Link></a></li>
-          <li><a class="nav-link scrollto " >Portfolio</a></li>
-          <li><a class="nav-link scrollto" >Team</a></li>
+          <li><a class="nav-link scrollto" ><Link to="/login">LogIn</Link></a></li>
+          <li><a class="nav-link scrollto" onClick={handleLogout}><Link to="/">LogOut</Link></a></li>
           <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
               <li><a href="#">Drop Down 1</a></li>

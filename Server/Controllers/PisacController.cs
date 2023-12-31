@@ -155,4 +155,61 @@ namespace Controllers;
             return BadRequest(ex.Message);
         }
     }
+    [Route("GetPisce")]
+    [HttpGet]
+    public async Task<IActionResult> GetPisce()
+    {
+        try{
+            using(var session = _driver.AsyncSession())
+            {
+                var result = await session.ExecuteWriteAsync( async tx=>{
+                    var query = "MATCH (p:Pisac) RETURN p";
+                    var cursor = await tx.RunAsync(query);
+                    var records = await cursor.ToListAsync();
+                    var resultData = new List<object>();
+                    foreach (var record in records)
+                    {
+                        var node = record["p"].As<INode>();
+                        var id = node.Id; 
+                        var nodeProperties = node.Properties;
+                        var neo4jDate = (Neo4j.Driver.LocalDate)nodeProperties["DatumRodjenja"];
+                        var neo4jDate2 = nodeProperties.ContainsKey("DatumSmrti") ? (Neo4j.Driver.LocalDate)nodeProperties["DatumSmrti"] : null;
+                        DateTime? datumSmrti = null;
+
+                        if (neo4jDate2 != null)
+                        {
+                            datumSmrti = new DateTime(neo4jDate2.Year, neo4jDate2.Month, neo4jDate2.Day);
+                        }
+                        var fotografija = nodeProperties.ContainsKey("Fotografija") ? nodeProperties["Fotografija"] : null; 
+                        var resultObject = new
+                        {
+                            Id=id,
+                            Ime=nodeProperties["Ime"],
+                            Prezime=nodeProperties["Prezime"],
+                            DatumRodjenja=new DateOnly(neo4jDate.Year, neo4jDate.Month, neo4jDate.Day),
+                            DatumSmrti=datumSmrti,
+                            Nacionalnost=nodeProperties["Nacionalnost"],
+                            Fotografija=fotografija != null ? fotografija.ToString() : null
+                        };
+
+                        resultData.Add(resultObject);
+                    }
+                    return resultData;
+                    
+                });
+                if(result!=null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest("Greska prilikom pribavljanju Pisca");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+}

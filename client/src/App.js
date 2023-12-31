@@ -7,6 +7,7 @@ import Knjige from './Pages/Knjige';
 import axios from "axios";
 import { UserContextProvider } from "./UserContext.js";
 import Login from './Pages/Login.js';
+import Pisci from './Pages/AdminPisci.js';
 axios.defaults.baseURL = "http://localhost:5002";
 axios.defaults.withCredentials = true;
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path = "/registration" element={<Register/>}/>
         <Route path = "/knjige" element={<Knjige/>}/>
         <Route path="/login" element={<Login/>}></Route>
+        <Route path="/pisci" element={<Pisci/>}></Route>
       </Route>
     </Routes>
     </UserContextProvider>

@@ -9,6 +9,7 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+@import "bootstrap/dist/css/bootstrap.min.css";
 body {
   font-family: "Open Sans", sans-serif;
   color: #444444;
@@ -566,18 +567,18 @@ h6 {
     margin-top: 10px;
     padding-bottom: 50px; 
     display: flex;
-    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    flex-wrap: wrap; 
     justify-content: center;
     align-items: center;
     text-align: center;
   }
   @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
-.rib-mesta-container {
+.pisci-container {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; /* Add some spacing between items */
+  gap: 20px; 
 }
 
 
@@ -647,8 +648,9 @@ p {
   border-color: rgba(255, 255, 255, 0.9);
   transition: all .3s ease;  
 }
-.rib-mesta-container{
-  padding-left: 82px;
+.pisci-container{
+  padding-left: 200px;
+  text-align: center;
 }
 .fill {
   background: rgba(0, 212, 255, 0.9);
@@ -664,13 +666,13 @@ p {
   filter: drop-shadow(0 10px 5px rgba(0,0,0,0.125));
   transition: all .3s ease;    
 }
-.rib-mesto-card {
+.pisac-card {
   background-color: rgba(17, 25, 40, 0.25);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
   padding: 38px;
   filter: drop-shadow(0 30px 10px rgba(0, 0, 0, 0.125));
-  flex: 0 0 calc(33.333% - 40px); /* Adjust the width as needed for 3 items per row */
+  flex: 0 0 calc(25% - 40px); /* Adjust the width as needed for 3 items per row */
   @media (max-width: 1200px) {
     flex: 0 0 calc(50% - 40px); 
   }
@@ -679,13 +681,13 @@ p {
     flex: 0 0 calc(100% - 40px); 
   }
 }
-.rib-mesto-card1 {
+.pisac-card1 {
   background-color: rgba(17, 25, 40, 0.25);
   border-radius: 12px;
-  padding: 38px;
+  padding: 20px;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.125);
-  flex: 0 0 calc(33.333% - 40px); /* Adjust the width as needed for 3 items per row */
+  flex: 0 0 calc(25% - 40px); /* Adjust the width as needed for 3 items per row */
   
   @media (max-width: 1200px) {
     flex: 0 0 calc(50% - 40px); /* Adjust the width for 2 items per row */
@@ -703,5 +705,10 @@ p {
 
 /* Set equal width for all items */
 .equal-width {
-  flex: 0 0 calc(33.333% - 40px); /* Adjust the width for the desired number of items per row */
+  flex: 0 0 calc(33.33% - 40px); /* Adjust the width for the desired number of items per row */
+}
+
+.rib-mesto-card-row {
+  display: flex;
+  justify-content: space-between;
 }

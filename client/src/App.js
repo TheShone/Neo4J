@@ -8,6 +8,9 @@ import axios from "axios";
 import { UserContextProvider } from "./UserContext.js";
 import Login from './Pages/Login.js';
 import Pisci from './Pages/AdminPisci.js';
+import "bootstrap/dist/css/bootstrap.min.css";
+import AdminPisac from './Pages/AdminPisac.js';
+
 axios.defaults.baseURL = "http://localhost:5002";
 axios.defaults.withCredentials = true;
 function App() {
@@ -19,6 +22,7 @@ function App() {
         <Route path = "/knjige" element={<Knjige/>}/>
         <Route path="/login" element={<Login/>}></Route>
         <Route path="/pisci" element={<Pisci/>}></Route>
+        <Route path="/pisac/:id" element={<AdminPisac/>}></Route>
       </Route>
     </Routes>
     </UserContextProvider>

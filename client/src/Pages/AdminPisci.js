@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import AdminPisciListItem from "./AdminPisciListItem";
 
 const Pisci = () =>{
+  const handleClose = () => setShowAlert(false);
   const [name,setName] = useState("");
   const [surName,setSurName] = useState("");
   const [birthDate,setBirthDate] = useState("");
@@ -85,6 +86,8 @@ const Pisci = () =>{
                 console.log(response.data);
               }
             } catch (error) {
+                setStringGreska("Greska pri izmeni.");
+                setShowAlert(true);
                 console.log("Error:", error.message);
             }
           });
@@ -98,6 +101,23 @@ const Pisci = () =>{
 
   }
     return(
+      <>
+            <Modal
+          show={showAlert}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Neuspešna Dodavanje Pisaca</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{stringGreska}</Modal.Body>
+          <Modal.Footer>
+            <button className="btn-prim" onClick={handleClose}>
+              Zatvori
+            </button>
+          </Modal.Footer>
+        </Modal>
         <div style={{ marginTop: "130px"}}>
       <div id="glavni">
         <div className="pisci-container">
@@ -385,12 +405,6 @@ const Pisci = () =>{
               </form>
                   
           </div>
-        {/* <ng-container class="ng-container">
-          <button class="btn btn-primary" type="button" disabled>
-            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-            Loading...
-          </button>
-        </ng-container> */}
           {currentItems.map((item, ind) => (
             <AdminPisciListItem
               item={item}
@@ -406,6 +420,7 @@ const Pisci = () =>{
       </div>
     </div>
     </div>
+    </>
     )
 }
 export default Pisci;

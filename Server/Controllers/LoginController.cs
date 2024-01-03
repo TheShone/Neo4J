@@ -100,7 +100,7 @@ namespace Controllers;
                                                 id = user!.ID,
                                                 korisnickoIme = user.KorisnickoIme,
                                                 email = user.Email,
-                                                role = "Citalac"
+                                                role = "Citaoc"
                                             });
                                             
                                         }
@@ -203,7 +203,6 @@ namespace Controllers;
 
         private string GenerateCitaoca(Citalac c)
         {
-            Console.WriteLine($"USAO : {Config["Jwt:Key"]}");
             var securityKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config["Jwt:Key"]!));
             var creditendals=new SigningCredentials(securityKey,SecurityAlgorithms.HmacSha256);
 

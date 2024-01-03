@@ -15,8 +15,8 @@ const Header = () => {
     axios
       .post("/Login/LogOut", {}, config)
       .then(() => {
-        setUser(null);
         setRedirect("/");
+        setUser(null);
       })
       .catch((err) => {
         console.log("Error:" + err.message);
@@ -37,6 +37,9 @@ const Header = () => {
           }
           {user?.role==='Admin' &&
             <li><a class="nav-link scrollto" href="#contact"><Link to="/pisci">Pisci</Link></a></li>
+          }
+          {user?.role==='Admin' &&
+            <li><a class="nav-link scrollto" href="#contact"><Link to="/izdavaci">Izdavaci</Link></a></li>
           }
           {user &&
             <li><a class="nav-link scrollto" href="#contact"><Link to="/profil">Profil</Link></a></li>

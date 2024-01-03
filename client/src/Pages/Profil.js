@@ -31,14 +31,15 @@ const Profil = () =>{
       }
     const handleClose = () => setShowAlert(false);
     useEffect (() =>{
-        if(!user){
-          return;
-        }
+      if(!user)
+      {
+        return;
+      }
+        console.log(user);
         if(user?.role==="Admin")
         {
             axios.get(`/Admin/GetAdmina/${user?.id}`)
             .then((response)=>{
-              console.log(response.data)
                 setItem(response.item);
                 setName(response.data.Ime);
                 setSurName(response.data.Prezime);
@@ -60,6 +61,7 @@ const Profil = () =>{
         }
         else if(user?.role==="Citaoc")
         {
+          console.log("Ajmo citaoc");
             axios.get(`/Citalac/GetCitaoca/${user?.id}`)
             .then((response)=>{
                 setItem(response.item);
@@ -81,7 +83,7 @@ const Profil = () =>{
                 console.log(err);
             })
         }
-    },[updatedUser,user])
+    },[updatedUser,user,showAlert,updateFlag])
     const izmeni =(e)=>{
         e.preventDefault();
         setUpdateFlag(!updateFlag)
@@ -89,7 +91,8 @@ const Profil = () =>{
     const updateProfil = async (e) => {
       e.preventDefault();
       try{
-            
+            console.log("Usao");
+            console.log(user.role);
             const validationErrors = {};
             if (name.length <= 0) {
                 validationErrors.name = "Ime treba da ima više od 0 karaktera";
@@ -160,17 +163,17 @@ const Profil = () =>{
               }
               else if (user?.role==="Citaoc")
               {
-                if (photo !== null) {
-                  const imageRef = ref(storage, `citaoci/${photo.name + v4()}`);
+                if (newPhoto !== null) {
+                  const imageRef = ref(storage, `citaoci/${newPhoto.name + v4()}`);
                   let photourl = "";
-                  uploadBytes(imageRef, photo).then(() => {
+                  uploadBytes(imageRef, newPhoto).then(() => {
                     getDownloadURL(imageRef).then(async (res) => {
                       photourl = res;
                       try {
                         const response = await axios.put(`/Citalac/UpdateCitaoca/${user?.id}`, {
                           ime: name,
                           prezime: surName,
-                          kodisnickoIme: userName,
+                          korisnickoIme: userName,
                           email: email,
                           sifra:newPassword,
                           brojTelefona: number,
@@ -178,6 +181,7 @@ const Profil = () =>{
                           slika: photourl
                         },config);
                         if (response.status === 200) {
+                          setPhoto(newPhoto);
                           setUpdateFlag(false);
                           setUpdatedUser(!updatedUser)
                         } else {
@@ -217,7 +221,7 @@ const Profil = () =>{
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Neuspešna Registracija</Modal.Title>
+            <Modal.Title>Greska pri izmeni</Modal.Title>
           </Modal.Header>
           <Modal.Body>{stringGreska}</Modal.Body>
           <Modal.Footer>

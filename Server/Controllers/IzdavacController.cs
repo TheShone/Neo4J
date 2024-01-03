@@ -88,9 +88,54 @@ namespace Controllers;
                 return BadRequest(ex.Message);
             }
         }
-    [Route("GetIzdacaca/{id}")]
+    [Route("GetIzdavaca/{id}")]
     [HttpGet]
-    public async Task<IActionResult> GetIzdacaca(int id)
+    public async Task<IActionResult> GetIzdaca(int id)
+    {
+        try{
+            using(var session = _driver.AsyncSession())
+            {
+                var result = await session.ExecuteWriteAsync( async tx=>{
+                    var query = "MATCH (i:Izdavac) WHERE id(i)=$id RETURN i";
+                    var parameters= new {id};
+                    var cursor = await tx.RunAsync(query,parameters);
+                    var records = await cursor.ToListAsync();
+                     if (records.Count > 0)
+                    {
+                        var record = records[0];
+                        var id = record["i"].As<INode>().Id; 
+                        var nodeProperties = record["i"].As<INode>().Properties; 
+                        var resultDictionary = new Dictionary<string, object>(nodeProperties)
+                        {
+                            { "id", id }
+                        };
+
+                        return resultDictionary;
+                    }
+                    else
+                    {
+                        return null; 
+                    }
+                    
+                });
+                if(result!=null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest("Greska prilikom pribavljanju Izdavaca");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [Route("GetIzdavace")]
+    [HttpGet]
+    public async Task<IActionResult> GetIzdavace(int id)
     {
         try{
             using(var session = _driver.AsyncSession())

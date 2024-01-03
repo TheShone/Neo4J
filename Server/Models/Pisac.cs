@@ -4,8 +4,6 @@ namespace Models
 {
     public class Pisac
     {
-        [Key]
-        public int ID { get; set;}
         public required string Ime {get; set;}
 
         public required string Prezime {get; set;}

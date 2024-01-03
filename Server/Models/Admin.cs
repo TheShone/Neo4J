@@ -4,8 +4,7 @@ namespace Models
 {
     public class Admin
     {
-        [Key]
-        public int ID { get; set;}
+
         public required string Ime {get; set;}
         public required string Prezime{get; set;}
         public required string KorisnickoIme{get;set;}

@@ -76,16 +76,16 @@ namespace Controllers;
                     ModelState.AddModelError("KorisnickoIme","Korisnicko ime mora da ima vecu duzinu od 0");
                 if(UpdatedCitalac.Email.Length<=0|| Regex.IsMatch(UpdatedCitalac.Email,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")==false)
                     ModelState.AddModelError("Email","Email ne moze da bude prazan i mora da bude u formatu emaila");
-                if(UpdatedCitalac.Sifra.Length<=0)
+                if(UpdatedCitalac.Sifra.Length<=7)
                     ModelState.AddModelError("Sifra","Sifra mora da bude veca od 0");
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                    return BadRequest("Validacija");
                 using (var session = _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        var query1 = "Match (c:Citalac) WHERE c.Email = $email or c.KorisnickoIme=$korisnicko RETURN c";
-                        var parameters1 = new { email=UpdatedCitalac.Email,  korisnicko=UpdatedCitalac.KorisnickoIme};
+                        var query1 = "Match (c:Citalac) WHERE c.id <> $id and (c.Email = $email or c.KorisnickoIme=$korisnicko) RETURN c";
+                        var parameters1 = new { id,email=UpdatedCitalac.Email,  korisnicko=UpdatedCitalac.KorisnickoIme};
                         var cursor1 =  await tx.RunAsync(query1, parameters1);
                         var resultatList= await cursor1.ToListAsync();
                         if(resultatList.Count==0)

@@ -84,13 +84,22 @@ namespace Controllers;
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        string sifra= BCrypt.Net.BCrypt.HashPassword(UpdatedCitalac.Sifra,10);
-                        UpdatedCitalac.Sifra=sifra;
-                        var query = "Match (c:Citalac) WHERE ID(c) = $id SET c = $updatedCitalac RETURN c";
-                        var parameters = new { id,  updatedCitalac=UpdatedCitalac};
+                        var query1 = "Match (c:Citalac) WHERE c.Email = $email or c.KorisnickoIme=$korisnicko RETURN c";
+                        var parameters1 = new { email=UpdatedCitalac.Email,  korisnicko=UpdatedCitalac.KorisnickoIme};
+                        var cursor1 =  await tx.RunAsync(query1, parameters1);
+                        var resultatList= await cursor1.ToListAsync();
+                        if(resultatList.Count==0)
+                        {
+                            string sifra= BCrypt.Net.BCrypt.HashPassword(UpdatedCitalac.Sifra,10);
+                            UpdatedCitalac.Sifra=sifra;
+                            var query = "Match (c:Citalac) WHERE ID(c) = $id SET c = $updatedCitalac RETURN c";
+                            var parameters = new { id,  updatedCitalac=UpdatedCitalac};
+                            var cursor =  await tx.RunAsync(query, parameters);
+                            return cursor;
+                        }
+                        else
+                            return null;
 
-                        var cursor =  await tx.RunAsync(query, parameters);
-                        return cursor;
                     });
                     if (result != null)
                     {

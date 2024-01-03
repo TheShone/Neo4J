@@ -26,7 +26,6 @@ const Login = () => {
       const userInfo = await axios.post(
         `/Login/Login/${encodedEmail}/${encodedPass}`
       );
-      console.log(userInfo);
       setUser(userInfo.data);
       setRedirect(true);
     } catch (e) {

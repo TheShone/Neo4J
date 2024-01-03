@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { Route, Routes } from "react-router-dom";
 import Layout from './Layout';
@@ -10,7 +9,7 @@ import Login from './Pages/Login.js';
 import Pisci from './Pages/AdminPisci.js';
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminPisac from './Pages/AdminPisac.js';
-
+import Profil from './Pages/Profil.js';
 axios.defaults.baseURL = "http://localhost:5002";
 axios.defaults.withCredentials = true;
 function App() {
@@ -23,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login/>}></Route>
         <Route path="/pisci" element={<Pisci/>}></Route>
         <Route path="/pisac/:id" element={<AdminPisac/>}></Route>
+        <Route path="/profil" element={<Profil/>}></Route>
       </Route>
     </Routes>
     </UserContextProvider>

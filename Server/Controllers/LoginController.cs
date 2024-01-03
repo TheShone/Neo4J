@@ -40,7 +40,6 @@ namespace Controllers;
                                     {
                                         { "id", id }
                                     };
-                                    Console.WriteLine($"Final Result: {nodeProperties["DatumRodjenja"]}"); 
                                     var neo4jDate = (Neo4j.Driver.LocalDate)nodeProperties["DatumRodjenja"];
                                     citaoc = new Citalac
                                     {
@@ -55,15 +54,15 @@ namespace Controllers;
                                         Slika = (string?)nodeProperties["Slika"],
                                     };
                                 }
-                                var query1 = "Match (a:Admin) WHERE a.email=$email return a";
-                                var parameters1 = new {email=email};
+                                var query1 = "Match (a:Admin) WHERE a.Email=$email return a";
+                                var parameters1 = new {email};
                                 var cursor1 = await tx.RunAsync(query1,parameters1);
                                 var records1 = await cursor1.ToListAsync(); 
                                 if (records1.Count > 0)
                                 {
-                                    var record = records[0];
+                                    var record = records1[0];
                                     var id = record["a"].As<INode>().Id; 
-                                    var nodeProperties = record["c"].As<INode>().Properties; 
+                                    var nodeProperties = record["a"].As<INode>().Properties; 
                                     var resultDictionary1 = new Dictionary<string, object>(nodeProperties)
                                     {
                                         { "id", id }
@@ -91,10 +90,6 @@ namespace Controllers;
                             {
                                     if(resultCitaoc!=null)
                                     {
-                                        Console.WriteLine($"Final Result: {resultCitaoc.ID}");
-                                        Console.WriteLine($"Final Result: {resultCitaoc.KorisnickoIme}");
-                                        Console.WriteLine($"Final Result: {resultCitaoc.Email}");
-                                        Console.WriteLine($"Final Result: {resultCitaoc.Sifra}");
                                         var user=resultCitaoc;
                                         var res=resultCitaoc?.Sifra != null && BCrypt.Net.BCrypt.Verify(password,resultCitaoc.Sifra!);
                                         if(res)

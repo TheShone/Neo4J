@@ -25,17 +25,31 @@ public class AdminController:ControllerBase
                 ModelState.AddModelError("KorisnickoIme","Korisnicko ime mora da ima vecu duzinu od 0");
             if(Admin.Email.Length<=0|| Regex.IsMatch(Admin.Email,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")==false)
                 ModelState.AddModelError("Email","Email ne moze da bude prazan i mora da bude u formatu emaila");
-            if(Admin.Sifra.Length<=0)
-                ModelState.AddModelError("Sifra","Sifra mora da bude veca od 0");
+            if(Admin.Sifra.Length<=7)
+                ModelState.AddModelError("Sifra","Sifra mora da bude veca od 8");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             using(var session = _driver.AsyncSession())
             {
                 var result = await session.ExecuteWriteAsync( async tx=>{
-                    var query = "CREATE (a:Admin  {ime: $ime, prezime: $prezime, korisnickoIme: $korisnickoIme, email:$email, sifra: $sifra, datumRodjenja: $datumRodjenja, slika: $slika}) RETURN a";
-                    var parameters= new { ime = Admin.Ime,  prezime= Admin.Prezime, korisnickoIme= Admin.KorisnickoIme, email = Admin.Email, sifra=Admin.Sifra, datumRodjenja=Admin.DatumRodjenja,  slika=Admin.Slika};
-                    var cursor = await tx.RunAsync(query,parameters);
-                    return cursor;
+                    var query1 = "Match (a:Admin) WHERE a.Email = $email or a.KorisnickoIme=$korisnicko RETURN a";
+                        var parameters1 = new { email=Admin.Email,  korisnicko=Admin.KorisnickoIme};
+                        var cursor1 =  await tx.RunAsync(query1, parameters1);
+                        var resultatList= await cursor1.ToListAsync();
+                        if(resultatList.Count==0)
+                        {
+                            string sifra= BCrypt.Net.BCrypt.HashPassword(Admin.Sifra,10);
+                            Admin.Sifra=sifra;
+                            var query = "CREATE (a:Admin) SET a=$admin RETURN a";
+                            var parameters= new { admin=Admin};
+                            var cursor = await tx.RunAsync(query,parameters);
+                            var records = await cursor.ToListAsync(); // Odmah koristi rezultate
+                            return records;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                 });
                 if(result!=null)
                 {
@@ -65,21 +79,32 @@ public class AdminController:ControllerBase
                     ModelState.AddModelError("KorisnickoIme","Korisnicko ime mora da ima vecu duzinu od 0");
                 if(UpdatedAdmin.Email.Length<=0|| Regex.IsMatch(UpdatedAdmin.Email,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")==false)
                     ModelState.AddModelError("Email","Email ne moze da bude prazan i mora da bude u formatu emaila");
-                if(UpdatedAdmin.Sifra.Length<=0)
-                    ModelState.AddModelError("Sifra","Sifra mora da bude veca od 0");
+                if(UpdatedAdmin.Sifra.Length<=7)
+                    ModelState.AddModelError("Sifra","Sifra mora da bude veca od 8");
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 using (var session = _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        string sifra= BCrypt.Net.BCrypt.HashPassword(UpdatedAdmin.Sifra,10);
-                        UpdatedAdmin.Sifra=sifra;
-                        var query = "Match (a:Admin) WHERE ID(a) = $id SET a = $updatedAdmin RETURN c";
-                        var parameters = new { id,  updatedAdmin=UpdatedAdmin};
+                        var query1 = "Match (a:Admin) WHERE a.id <> $id and (a.Email = $email or a.KorisnickoIme=$korisnicko) RETURN a";
+                        var parameters1 = new { id, email=UpdatedAdmin.Email,  korisnicko=UpdatedAdmin.KorisnickoIme};
+                        var cursor1 =  await tx.RunAsync(query1, parameters1);
+                        var resultatList= await cursor1.ToListAsync();
+                        if(resultatList.Count==0)
+                        {
+                            string sifra= BCrypt.Net.BCrypt.HashPassword(UpdatedAdmin.Sifra,10);
+                            UpdatedAdmin.Sifra=sifra;
+                            var query = "Match (a:Admin) WHERE ID(a) = $id SET a = $updatedAdmin RETURN a";
+                            var parameters = new { id,  updatedAdmin=UpdatedAdmin};
 
-                        var cursor =  await tx.RunAsync(query, parameters);
-                        return cursor;
+                            var cursor =  await tx.RunAsync(query, parameters);
+                            return cursor;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     });
                     if (result != null)
                     {

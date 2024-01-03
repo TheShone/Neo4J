@@ -7,10 +7,13 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { storage } from "./Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { Modal } from "react-bootstrap";
+
 const AdminPisac = () =>{
     const config = {
         headers: {Authorization: `Bearer ${Cookies.get("Token")}`}
       }
+    const handleClose = () => setShowAlert(false);
     const { id } = useParams();
     const {user,ready} = useContext(UserContext);
     const [item,setItem]=useState("");
@@ -20,6 +23,7 @@ const AdminPisac = () =>{
     const [deathDate,setDeathDate]=useState(null);
     const [nationality,setNationality]=useState("");
     const [photo,setPhoto]=useState("");
+    const [newPhoto,setNewPhoto]=useState("");
     const [updateFlag,setUpdateFlag]=useState(false);
     const [stringGreska, setStringGreska] = useState("");
     const [showAlert, setShowAlert] = useState(false);
@@ -47,7 +51,7 @@ const AdminPisac = () =>{
                 console.log(err);
             })
         }
-    },[updatedPisac])
+    },[updatedPisac]);
     const updatePisac = async (e) =>{
         e.preventDefault();
         try{
@@ -67,10 +71,10 @@ const AdminPisac = () =>{
                   setShowAlert(true);
                 });
               }
-              if (photo !== null) {
-                const imageRef = ref(storage, `pisci/${photo.name + v4()}`);
+              if (newPhoto !== null) {
+                const imageRef = ref(storage, `pisci/${newPhoto.name + v4()}`);
                 let photourl = "";
-                uploadBytes(imageRef, photo).then(() => {
+                uploadBytes(imageRef, newPhoto).then(() => {
                   getDownloadURL(imageRef).then(async (res) => {
                     photourl = res;
                     try {
@@ -83,13 +87,18 @@ const AdminPisac = () =>{
                         fotografija: photourl,
                       },config);
                       if (response.status === 200) {
+                        setPhoto(newPhoto);
                         setUpdateFlag(false);
                         setUpdatedPisac(!updatedPisac)
                       } else {
+                        setStringGreska("Greska pri izmeni.");
+                        setShowAlert(true);
                         console.log("Server returned status code " + response.status);
                         console.log(response.data);
                       }
                     } catch (error) {
+                        setStringGreska("Greska pri izmeni.");
+                        setShowAlert(true);
                         console.log("Error:", error.message);
                     }
                   });
@@ -100,10 +109,10 @@ const AdminPisac = () =>{
             console.log(err);
         }
     }
-    function izmeni(e){
-        e.preventDefault();
-        setUpdateFlag(!updateFlag)
-    }
+    const izmeni =(e)=>{
+      e.preventDefault();
+      setUpdateFlag(!updateFlag)
+     }
     const backgroundImageStyle = {
         backgroundImage: 'url("' + photo + '")',
         backgroundSize: 'contain', 
@@ -114,7 +123,24 @@ const AdminPisac = () =>{
         marginLeft:'50px'
     };
     return(
-        <div style={{ marginTop: "130px" }}>
+      <>
+            <Modal
+          show={showAlert}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Neuspešna Registracija</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{stringGreska}</Modal.Body>
+          <Modal.Footer>
+            <button className="btn-prim" onClick={handleClose}>
+              Zatvori
+            </button>
+          </Modal.Footer>
+        </Modal>
+      <div style={{ marginTop: "130px" }}>
       <form className="max-w-md mx-auto" >
       <div className="banner-image" style={backgroundImageStyle}> </div> 
         <div className="grid md:grid-cols-2 md:gap-6">
@@ -205,7 +231,7 @@ const AdminPisac = () =>{
             <input
               type="file"
               name="slika"
-              onChange={(e) => setPhoto(e.target.files[0])}
+              onChange={(e) => setNewPhoto(e.target.files[0])}
               id="slika"
               className="block py-2.5 px-0 w-full text-sm"
               placeholder=" "
@@ -230,6 +256,7 @@ const AdminPisac = () =>{
         </button>
       </form>
     </div>
+    </>
     );
 }
 export default AdminPisac;

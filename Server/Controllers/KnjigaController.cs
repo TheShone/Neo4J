@@ -26,8 +26,8 @@ namespace Controllers;
                 {
                     var result = await session.ExecuteWriteAsync(async tx =>
                     {
-                        var query = "CREATE (k:Knjiga {naslov: $naslov, brojStrana: $brojSTrana}) RETURN k";
-                        var parameters = new { naslov = Knjiga.Naslov,  brojSTrana= Knjiga.BrojStrana };
+                        var query = "CREATE (k:Knjiga {naslov: $naslov, brojStrana: $brojSTrana, slika: $slika, brojnoStanje: $brojnoStanje}) RETURN k";
+                        var parameters = new { naslov = Knjiga.Naslov,  brojSTrana= Knjiga.BrojStrana, slika = Knjiga.Slika,brojnoStanje=Knjiga.BrojnoStanje };
 
                         var cursor =  await tx.RunAsync(query, parameters);
                         var resultatList = await cursor.ToListAsync();
@@ -106,6 +106,35 @@ namespace Controllers;
                 return BadRequest(ex.Message);
             }
         }
+        [Route("UpdateKnjigaStanje/{id}/{kolicina}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateKnjigu(int id,int kolicina)
+        {
+            try{
+                    using(var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteWriteAsync(async tx=>{
+                        var query="Match (k:Knjiga) WHERE id(k)=$id SET k.brojnoStanje=$kolicina RETURN k";
+                        var parameters=new{id, kolicina};
+                        var cursor = await tx.RunAsync(query,parameters);
+                        var record = await cursor.ToListAsync();
+                        return record;
+                    });
+                        if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Neuspešno brisanje citaoca.");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [Route("GetKnjigu/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetKnjigu(int id)
@@ -114,11 +143,37 @@ namespace Controllers;
                 using(var session = _driver.AsyncSession())
                 {
                     var result = await session.ExecuteReadAsync(async tx => {
-                        var query="Match (k:Knjiga) WHERE id(k)=$id RETURN k";
+                        var query="MATCH (k:Knjiga)-[:NAPISANA_OD_STRANE]->(p:Pisac), (k)-[:PRIPADA_ZANRU]->(z:Zanr), (k)-[:IZDATA_OD_STRANE]->(i:Izdavac) WHERE id(k)=$id RETURN k, p, z, i";
                         var parameters=new{id};
                         var cursor = await tx.RunAsync(query,parameters);
-                        var record = cursor.ToListAsync();
-                        return record;
+                        var records = await cursor.ToListAsync();
+                        if (records.Count > 0)
+                        {   
+                            var record = records[0];
+                            var bookNode = record["k"].As<INode>();
+                            var authorNode = record["p"].As<INode>();
+                            var genreNode = record["z"].As<INode>();
+                            var publisherNode = record["i"].As<INode>();
+
+                            var bookProperties = bookNode.Properties;
+                            var authorProperties = authorNode.Properties;
+                            var genreProperties = genreNode.Properties;
+                            var publisherProperties = publisherNode.Properties;
+                            
+                            var bookDictionary = new Dictionary<string, object>(bookProperties)
+                            {
+                                { "id", bookNode.Id },
+                                { "pisac", authorProperties },
+                                { "zanr", genreProperties },
+                                { "izdavac", publisherProperties }
+                            };
+
+                            return bookDictionary;
+                        }
+                        else
+                        {
+                            return null; 
+                        }
                     });
                     if(result != null)
                     {
@@ -126,7 +181,7 @@ namespace Controllers;
                     }
                     else
                     {
-                        return BadRequest("Greska pri izmeni Knjige");
+                        return BadRequest("Greska pri pribavljanju Knjige");
                     }
                 }
             }
@@ -159,6 +214,61 @@ namespace Controllers;
                 }
             }
             catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetKnjige")]
+        [HttpGet]
+        public async Task<IActionResult> GetKnjige()
+        {
+            try
+            {
+                using (var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteReadAsync(async tx =>
+                    {
+                        var query = "MATCH (k:Knjiga)-[:NAPISANA_OD_STRANE]->(p:Pisac), (k)-[:PRIPADA_ZANRU]->(z:Zanr), (k)-[:IZDATA_OD_STRANE]->(i:Izdavac) RETURN k, p, z, i";                    var cursor = await tx.RunAsync(query);
+                        var records = await cursor.ToListAsync();
+                        var booksList = new List<Dictionary<string, object>>();
+
+                        foreach (var record in records)
+                        {
+                            var bookNode = record["k"].As<INode>();
+                            var authorNode = record["p"].As<INode>();
+                            var genreNode = record["z"].As<INode>();
+                            var publisherNode = record["i"].As<INode>();
+
+                            var bookProperties = bookNode.Properties;
+                            var authorProperties = authorNode.Properties;
+                            var genreProperties = genreNode.Properties;
+                            var publisherProperties = publisherNode.Properties;
+
+                            var bookDictionary = new Dictionary<string, object>(bookProperties)
+                            {
+                                { "id", bookNode.Id },
+                                { "pisac", authorProperties },
+                                { "zanr", genreProperties },
+                                { "izdavac", publisherProperties }
+                            };
+
+                            booksList.Add(bookDictionary);
+                        }
+
+                        return booksList;
+                    });
+
+                    if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Error retrieving books");
+                    }
+                }
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

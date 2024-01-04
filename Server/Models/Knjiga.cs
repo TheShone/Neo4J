@@ -18,6 +18,8 @@ namespace Models
 
         public int BrojnoStanje {get; set;}
 
+        public string Slika {get; set;}
+
         public List<Citalac>? Citaoci{get; set;}
 
         public List<Recenzija>? Recenzije{get; set;}

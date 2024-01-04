@@ -13,6 +13,7 @@ import Profil from './Pages/Profil.js';
 import AdminIzdavaci from './Pages/AdminIzdavaci.js';
 import AdminNagrade from './Pages/AdminNagrade.js';
 import AdminZanr from './Pages/AdminZanr.js';
+import Knjiga from './Pages/Knjiga.js';
 axios.defaults.baseURL = "http://localhost:5002";
 axios.defaults.withCredentials = true;
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route path="/izdavaci" element={<AdminIzdavaci/>}></Route>
         <Route path="/nagrade" element={<AdminNagrade/>}></Route>
         <Route path="/zanri" element={<AdminZanr/>}></Route>
+        <Route path="/knjiga/:id" element={<Knjiga/>}></Route>
       </Route>
     </Routes>
     </UserContextProvider>

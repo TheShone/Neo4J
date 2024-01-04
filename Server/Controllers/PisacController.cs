@@ -174,11 +174,11 @@ namespace Controllers;
                         var nodeProperties = node.Properties;
                         var neo4jDate = (Neo4j.Driver.LocalDate)nodeProperties["DatumRodjenja"];
                         var neo4jDate2 = nodeProperties.ContainsKey("DatumSmrti") ? (Neo4j.Driver.LocalDate)nodeProperties["DatumSmrti"] : null;
-                        DateTime? datumSmrti = null;
+                        DateOnly? datumSmrti = null;
 
                         if (neo4jDate2 != null)
                         {
-                            datumSmrti = new DateTime(neo4jDate2.Year, neo4jDate2.Month, neo4jDate2.Day);
+                            datumSmrti = new DateOnly(neo4jDate2.Year, neo4jDate2.Month, neo4jDate2.Day);
                         }
                         var fotografija = nodeProperties.ContainsKey("Fotografija") ? nodeProperties["Fotografija"] : null; 
                         var resultObject = new

@@ -29,7 +29,6 @@ const AdminZanr = () =>{
           axios.get('/Zanr/GetZanre',config)
           .then((response)=> {
             setCurrentItems(response.data);
-            console.log(response.data);
             setReadyy(true);
           })
           .catch((err)=>{

@@ -135,32 +135,33 @@ namespace Controllers;
     }
     [Route("GetIzdavace")]
     [HttpGet]
-    public async Task<IActionResult> GetIzdavace(int id)
+    public async Task<IActionResult> GetIzdavace()
     {
         try{
             using(var session = _driver.AsyncSession())
             {
                 var result = await session.ExecuteWriteAsync( async tx=>{
-                    var query = "MATCH (i:Izdavac) WHERE id(i)=$id RETURN i";
-                    var parameters= new {id};
-                    var cursor = await tx.RunAsync(query,parameters);
+                    var query = "MATCH (i:Izdavac) RETURN i";
+                    var cursor = await tx.RunAsync(query);
                     var records = await cursor.ToListAsync();
-                     if (records.Count > 0)
+                    var resultData = new List<object>();
+                    foreach (var record in records)
                     {
-                        var record = records[0];
-                        var id = record["i"].As<INode>().Id; 
-                        var nodeProperties = record["i"].As<INode>().Properties; 
-                        var resultDictionary = new Dictionary<string, object>(nodeProperties)
+                        var node = record["i"].As<INode>();
+                        var id = node.Id; 
+                        var nodeProperties = node.Properties; 
+                        var resultObject = new
                         {
-                            { "id", id }
+                            Id=id,
+                            Naziv=nodeProperties["Naziv"],
+                            Adresa=nodeProperties["Adresa"],
+                            KontaktTelefon=nodeProperties["KontaktTelefon"],
+                            Email=nodeProperties["Email"]
                         };
 
-                        return resultDictionary;
+                        resultData.Add(resultObject);
                     }
-                    else
-                    {
-                        return null; 
-                    }
+                    return resultData;
                     
                 });
                 if(result!=null)

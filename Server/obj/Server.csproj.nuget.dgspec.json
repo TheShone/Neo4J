@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\server\\Server.csproj": {}
+    "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\Server.csproj": {}
   },
   "projects": {
-    "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\server\\Server.csproj": {
+    "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\server\\Server.csproj",
+        "projectUniqueName": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\Server.csproj",
         "projectName": "Server",
-        "projectPath": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\server\\Server.csproj",
+        "projectPath": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\Server.csproj",
         "packagesPath": "C:\\Users\\nenad\\.nuget\\packages\\",
-        "outputPath": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\server\\obj\\",
+        "outputPath": "C:\\Fax\\Cetvrta godina\\NapredneBaze\\Neo4J\\Neo4J\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

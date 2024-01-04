@@ -4,6 +4,8 @@ namespace Models
 {
     public class Nagrada
     {
+        [Key]
+        public int ID { get; set;}
 
         public required string Naziv {get; set;}
 

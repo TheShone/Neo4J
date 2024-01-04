@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import axios from "axios";
 import { Link } from "react-router-dom";
-const AdminIzdavaciListItem = ({
+const AdminNagradeListItem = ({   
     item,
     key,
     vID,
@@ -15,7 +15,7 @@ const AdminIzdavaciListItem = ({
     const indeks=item.id;
     const handleDelete = () =>{
         axios
-        .delete(`Izdavac/DeleteIzdavac/${indeks}`, config)
+        .delete(`Nagrada/DeleteNagrada/${indeks}`, config)
         .then((response) => {
             setObrisano(true);
         })
@@ -28,11 +28,10 @@ const AdminIzdavaciListItem = ({
     return(
         <div className="pisac-card col-md-12 col-lg-3">
             <h4>Naziv: {item.naziv}</h4>
-            <h4>Adresa: {item.adresa}</h4>
-            <h4>Telefon: {item.kontaktTelefon}</h4>
-            <h4>Email: {item.email}</h4>
+            <h4>DatumDodeljivanja: {item.datumDodeljivanja}</h4>
+            <h4>MestoDodeljivanja: {item.mestoDodeljivanja}</h4>
             <button className="btn fill" onClick={handleDelete}>Obrisi</button>
         </div>
-    )
+    );
 }
-export default AdminIzdavaciListItem;
+export default AdminNagradeListItem;

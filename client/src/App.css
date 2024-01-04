@@ -681,10 +681,27 @@ p {
     flex: 0 0 calc(100% - 40px); 
   }
 }
+
 .pisac-card1 {
   background-color: rgba(17, 25, 40, 0.25);
   border-radius: 12px;
   padding: 20px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  flex: 0 0 calc(25% - 40px); /* Adjust the width as needed for 3 items per row */
+  
+  @media (max-width: 1200px) {
+    flex: 0 0 calc(50% - 40px); /* Adjust the width for 2 items per row */
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 calc(100% - 40px); /* Full width for 1 item per row */
+  }
+}
+.nagrada-card {
+  background-color: rgba(17, 25, 40, 0.25);
+  border-radius: 12px;
+  padding: 10px;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.125);
   flex: 0 0 calc(25% - 40px); /* Adjust the width as needed for 3 items per row */
@@ -706,9 +723,4 @@ p {
 /* Set equal width for all items */
 .equal-width {
   flex: 0 0 calc(33.33% - 40px); /* Adjust the width for the desired number of items per row */
-}
-
-.rib-mesto-card-row {
-  display: flex;
-  justify-content: space-between;
 }

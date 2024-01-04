@@ -36,13 +36,19 @@ const Header = () => {
             <li><a class="nav-link scrollto" >Iznajmljene</a></li>
           }
           {user?.role==='Admin' &&
-            <li><a class="nav-link scrollto" href="#contact"><Link to="/pisci">Pisci</Link></a></li>
+            <li><a class="nav-link scrollto"><Link to="/pisci">Pisci</Link></a></li>
           }
           {user?.role==='Admin' &&
-            <li><a class="nav-link scrollto" href="#contact"><Link to="/izdavaci">Izdavaci</Link></a></li>
+            <li><a class="nav-link scrollto"><Link to="/izdavaci">Izdavaci</Link></a></li>
+          }
+          {user?.role==='Admin' &&
+            <li><a class="nav-link scrollto"><Link to="/zanri">Zanri</Link></a></li>
+          }
+          {user?.role==='Admin' &&
+            <li><a class="nav-link scrollto"><Link to="/nagrade">Nagrade</Link></a></li>
           }
           {user &&
-            <li><a class="nav-link scrollto" href="#contact"><Link to="/profil">Profil</Link></a></li>
+            <li><a class="nav-link scrollto"><Link to="/profil">Profil</Link></a></li>
           }
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>

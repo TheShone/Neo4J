@@ -8,8 +8,8 @@ import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import Cookies from "js-cookie";
-import AdminIzdavaciListItem from "./AdminIzdavaciListItem";
-const AdminIzdavaci = () =>{
+import AdminZanrListItem from "./AdminZanrListItem";
+const AdminZanr = () =>{
     const handleClose = () => setShowAlert(false);
     const {user,ready} = useContext(UserContext);
     const [name,setName] = useState("");
@@ -26,7 +26,7 @@ const AdminIzdavaci = () =>{
       }
       useEffect(()=>{
         if(user){
-          axios.get('/Izdavac/GetIzdavace',config)
+          axios.get('/Zanr/GetZanre',config)
           .then((response)=> {
             setCurrentItems(response.data);
             console.log(response.data);
@@ -37,25 +37,12 @@ const AdminIzdavaci = () =>{
           })
         }
       })
-    const addIzdavaca = async (e) =>{
+    const addZanr = async (e) =>{
         e.preventDefault();
     try{
       const validationErrors = {};
       if (name.length <= 0) {
         validationErrors.name = "Ime treba da ima više od 0 karaktera";
-      }
-      if (adress.length <= 0) {
-        validationErrors.adress = "Adresa treba da ima više od 0 karaktera";
-      }
-      if (phone.length <= 0) {
-        validationErrors.adress = "Broj treba da ima više od 0 karaktera";
-      }
-      if (
-        email.length <= 0 ||
-        !/^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.test(email)
-      ) {
-        validationErrors.email =
-          "Email treba da ima više od 0 karaktera i da bude u formatu emaila";
       }
       if (Object.keys(validationErrors).length > 0) {
         Object.keys(validationErrors).forEach((property) => {
@@ -66,11 +53,8 @@ const AdminIzdavaci = () =>{
         });
       }
         try {
-            const response = await axios.post("/Izdavac/AddIzdavaca", {
+            const response = await axios.post("/Zanr/AddZanr", {
             naziv: name,
-            adresa: adress,
-            kontaktTelefon: phone,
-            email: email,
             });
             if (response.status !== 200) {
             console.log("Server returned status code " + response.status);
@@ -111,7 +95,7 @@ const AdminIzdavaci = () =>{
       <div id="glavni">
         <div className="pisci-container">
             <div className="pisac-card1 col-md-12 col-lg-3">
-              <form onSubmit={addIzdavaca}>
+              <form onSubmit={addZanr}>
                 <div className="form-group row padding">
                   <label className="col-4 col-form-label" >Ime:</label> 
                   <div className="col-8">
@@ -127,61 +111,15 @@ const AdminIzdavaci = () =>{
                       />
                   </div>
                 </div>
-                <div className="form-group row padding">
-                  <label className="col-4 col-form-label" >Adresa:</label> 
-                  <div className="col-8">
-                    <input
-                        value={adress}
-                        onChange={(e) => setAdress(e.target.value)}
-                        type="text"
-                        name="floating_first_name"
-                        id="floating_first_name"
-                        className="form-control"
-                        placeholder=" "
-                        required
-                      />
-                  </div>
-                </div>
-                <div className="form-group row padding">
-                  <label className="col-4 col-form-label" >Telefon:</label> 
-                  <div className="col-8">
-                    <input
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        type="text"
-                        name="floating_first_name"
-                        id="floating_first_name"
-                        className="form-control"
-                        placeholder=" "
-                        required
-                      />
-                  </div>
-                </div>
-                <div className="form-group row padding">
-                  <label className="col-4 col-form-label" >Email:</label> 
-                  <div className="col-8">
-                    <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        name="floating_first_name"
-                        id="floating_first_name"
-                        className="form-control"
-                        placeholder=" "
-                        required
-                      />
-                  </div>
-                </div>
                 <div className="form-group row">
                   <div className="offset-4 col-8">
                     <button name="submit" type="submit" className="btn btn-primary">Dodaj</button>
                   </div>
                 </div>
               </form>
-                  
           </div>
           {currentItems.map((item, ind) => (
-            <AdminIzdavaciListItem
+            <AdminZanrListItem
               item={item}
               key={ind}
               vID={user.id}
@@ -195,4 +133,4 @@ const AdminIzdavaci = () =>{
     </>
     );
 }
-export default AdminIzdavaci;
+export default AdminZanr;

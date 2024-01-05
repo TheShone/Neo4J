@@ -50,7 +50,6 @@ namespace Controllers;
                                         Email = (string)nodeProperties["Email"],
                                         Sifra = (string)nodeProperties["Sifra"],
                                         BrojTelefona = (string?)nodeProperties["BrojTelefona"],
-                                        DatumRodjenja = new DateOnly(neo4jDate.Year, neo4jDate.Month, neo4jDate.Day),
                                         Slika = (string?)nodeProperties["Slika"],
                                     };
                                 }

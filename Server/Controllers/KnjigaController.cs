@@ -1,5 +1,10 @@
+using System.Globalization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Neo4j.Driver;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 
 namespace Controllers;
     [ApiController]
@@ -108,7 +113,7 @@ namespace Controllers;
         }
         [Route("UpdateKnjigaStanje/{id}/{kolicina}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateKnjigu(int id,int kolicina)
+        public async Task<IActionResult> UpdateKnjigaStanje(int id,int kolicina)
         {
             try{
                     using(var session = _driver.AsyncSession())
@@ -127,6 +132,39 @@ namespace Controllers;
                     else
                     {
                         return BadRequest("Neuspešno brisanje citaoca.");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("UpdateKnjigaIznajmljivanje/{id}/{flag}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateKnjigaIznajmljivanje(int id,bool flag)
+        {
+            try{
+                    using(var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteWriteAsync(async tx=>{
+                        var query="";
+                        if(flag==true)
+                            query="Match (k:Knjiga) WHERE id(k)=$id SET k.brojnoStanje=k.brojnoStanje-1 RETURN k";
+                        else
+                            query="Match (k:Knjiga) WHERE id(k)=$id SET k.brojnoStanje=k.brojnoStanje+1 RETURN k";
+                        var parameters=new{id};
+                        var cursor = await tx.RunAsync(query,parameters);
+                        var record = await cursor.ToListAsync();
+                        return record;
+                    });
+                        if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Neuspešno menjanje knjige.");
                     }
                 }
             }
@@ -190,6 +228,50 @@ namespace Controllers;
                 return BadRequest(ex.Message);
             }
         }
+        [Route("GetOnlyKnjigu/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetOnlyKnjigu(int id)
+        {
+            try{
+                using(var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteReadAsync(async tx => {
+                        var query="MATCH (k:Knjiga) WHERE id(k)=$id RETURN k";
+                        var parameters=new{id};
+                        var cursor = await tx.RunAsync(query,parameters);
+                        var records = await cursor.ToListAsync();
+                        if (records.Count > 0)
+                        {   
+                            var record = records[0];
+                            var bookNode = record["k"].As<INode>();
+                            var bookProperties = bookNode.Properties;
+                            var bookDictionary = new Dictionary<string, object>(bookProperties)
+                            {
+                                { "id", bookNode.Id },
+                            };
+
+                            return bookDictionary;
+                        }
+                        else
+                        {
+                            return null; 
+                        }
+                    });
+                    if(result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Greska pri pribavljanju Knjige");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [Route("DeleteKnjigu/{id}")]
         [HttpDelete]
         public async Task<IActionResult> DeleteKnjigu(int id)
@@ -198,7 +280,7 @@ namespace Controllers;
                 using(var session =  _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx=>{
-                        var query = "Match (k:Knjiga) WHERE id(k)=$id delete k";
+                        var query = "MATCH (k:Knjiga)-[r]-() WHERE id(k)=$id DELETE k, r";
                         var parameters=new{id};
                         var cursor = await tx.RunAsync(query,parameters);
                         return cursor;
@@ -239,10 +321,13 @@ namespace Controllers;
                             var genreNode = record["z"].As<INode>();
                             var publisherNode = record["i"].As<INode>();
 
-                            var bookProperties = bookNode.Properties;
-                            var authorProperties = authorNode.Properties;
-                            var genreProperties = genreNode.Properties;
-                            var publisherProperties = publisherNode.Properties;
+                            var bookProperties = ConvertToDictionary(bookNode.Properties);
+                            var authorProperties = ConvertToDictionary(authorNode.Properties);
+                            var genreProperties = ConvertToDictionary(genreNode.Properties);
+                            var publisherProperties = ConvertToDictionary(publisherNode.Properties);
+                            Console.WriteLine(authorProperties["DatumRodjenja"]);
+                            ConvertDateOnlyToString(authorProperties, "DatumRodjenja");
+                            ConvertDateOnlyToString(authorProperties, "DatumSmrti");
 
                             var bookDictionary = new Dictionary<string, object>(bookProperties)
                             {
@@ -254,14 +339,20 @@ namespace Controllers;
 
                             booksList.Add(bookDictionary);
                         }
-
                         return booksList;
                     });
+                    var jsonSettings = new JsonSerializerSettings
+                    {
+                        DateFormatString = "yyyy-MM-dd",
+                        Converters = { new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" } }
+                    };
 
                     if (result != null)
                     {
-                        return Ok(result);
+                        var jsonResult = JsonConvert.SerializeObject(result, jsonSettings);
+                        return Ok(jsonResult);
                     }
+
                     else
                     {
                         return BadRequest("Error retrieving books");
@@ -271,6 +362,26 @@ namespace Controllers;
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        private Dictionary<string, object> ConvertToDictionary(IReadOnlyDictionary<string, object> readOnlyDictionary)
+        {
+            return readOnlyDictionary.ToDictionary(entry => entry.Key, entry => entry.Value);
+        }
+        private void ConvertDateOnlyToString(Dictionary<string, object> properties, string propertyName)
+        {            if (properties.ContainsKey(propertyName))
+            {
+                if (properties[propertyName] is DateOnly dateOnly)
+                {
+                    Console.WriteLine("kurac1");
+                    properties[propertyName] = dateOnly.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+                else if (properties[propertyName] is DateTime dateTime) // Dodato za DateTime proveru
+                {
+                    Console.WriteLine(properties[propertyName]);
+                    properties[propertyName] = dateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
             }
         } 
 

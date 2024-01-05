@@ -45,3 +45,4 @@ C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\server\bin\Debug\net8.0\System.Id
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\server\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\server\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
 C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\server\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Fax\Cetvrta godina\NapredneBaze\Neo4J\Neo4J\server\bin\Debug\net8.0\Newtonsoft.Json.dll

@@ -11,9 +11,9 @@ namespace Controllers;
         {
             _driver = GraphDatabase.Driver("neo4j+s://8528ea53.databases.neo4j.io", AuthTokens.Basic("neo4j", "7rPOZqbSx3SRB6Q1rFvG1hcMKcc4qolAKoB--c-px6o"));
         }
-        [Route("AddRecenzija")]
+        [Route("AddRecenzija/{idCitaoca}/{idKnjige}")]
         [HttpPost]
-        public async Task<IActionResult> AddRecenzija([FromBody] Recenzija Recenzija)
+        public async Task<IActionResult> AddRecenzija(int idCitaoca,int idKnjige,[FromBody] Recenzija Recenzija)
         {
             try{
                 using(var session = _driver.AsyncSession())
@@ -25,22 +25,22 @@ namespace Controllers;
 
                         var cursor =  await tx.RunAsync(query, parameters);
                         var resultatList = await cursor.ToListAsync();
+                        Console.WriteLine(Recenzija);
+
                         if(resultatList.Count>0)
                         {
                             var record = resultatList[0];
                             var createdNodeId = record["r"].As<INode>().Id;
-                            if (Recenzija.Knjiga != null)
-                            {
-                                var relationQuery = "MATCH (r:Recenzija), (k:Knjiga) WHERE ID(r) = $recenzijaId AND k.Naslov = $naslov MERGE (k)-[:OCENJEN_SA]->(r)";
-                                var relationParameters = new { recenzijaId = createdNodeId, naslov = Recenzija.Knjiga.Naslov };
-                                await tx.RunAsync(relationQuery, relationParameters);
-                            }
-                            if(Recenzija.Citalac!= null)
-                            {
-                                var relationQuery = "MATCH (r:Recenzija), (c:Citalac) WHERE ID(r) = $recenzijaId AND c.Email = $email MERGE (r)-[:OCENJENA_OD_STRANE]->(c)";
-                                var relationParameters = new { recenzijaId = createdNodeId, email = Recenzija.Citalac.Email };
-                                await tx.RunAsync(relationQuery, relationParameters);
-                            }
+                            
+                            var relationQuery = "MATCH (r:Recenzija), (k:Knjiga) WHERE id(r) = $recenzijaId AND id(k) = $id MERGE (k)-[:OCENJEN_SA]->(r)";
+                            var relationParameters = new { recenzijaId = createdNodeId, id=idKnjige };
+                            await tx.RunAsync(relationQuery, relationParameters);
+                            
+                            
+                            var relationQuery1 = "MATCH (r:Recenzija), (c:Citalac) WHERE id(r) = $recenzijaId AND id(c) = $id MERGE (r)-[:OCENJENA_OD_STRANE]->(c)";
+                            var relationParameters1 = new { recenzijaId = createdNodeId, id=idCitaoca };
+                            await tx.RunAsync(relationQuery1, relationParameters1);
+                            
                             
                         }
                         
@@ -57,6 +57,57 @@ namespace Controllers;
                 }
             }
             catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetRecenzijeZaKnjigu/{idKnjige}")]
+        [HttpGet]
+        public async Task<IActionResult> GetRecenzijeZaKnjigu(int idKnjige)
+        {
+            try
+            {
+                using (var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteReadAsync(async tx =>
+                    {
+                        var query = "MATCH (r:Recenzija)-[:OCENJENA_OD_STRANE]->(c:Citalac), (k:Knjiga)-[:OCENJEN_SA]->(r) WHERE id(k)=$idKnjige return r,c";
+                        var parameters = new { idKnjige };
+                        var cursor = await tx.RunAsync(query, parameters);
+                        var records = await cursor.ToListAsync();
+
+                        var recenzije = new List<Dictionary<string, object>>();
+                        foreach (var record in records)
+                        {
+                            var recenzijaNode = record["r"].As<INode>();
+                            var citalacNode = record["c"].As<INode>();
+
+                            var recenzijaProperties = recenzijaNode.Properties;
+                            var citalacProperties = citalacNode.Properties;
+
+                            var recenzijaDictionary = new Dictionary<string, object>(recenzijaProperties)
+                            {
+                                { "id", recenzijaNode.Id },
+                                { "citalac", citalacProperties }
+                            };
+
+                            recenzije.Add(recenzijaDictionary);
+                        }
+
+                        return recenzije;
+                    });
+
+                    if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Greska pri pribavljanju recenzija za knjigu");
+                    }
+                }
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -128,7 +179,7 @@ namespace Controllers;
                 using(var session =  _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx=>{
-                        var query = "Match (r:Recenzija) WHERE id(r)=$id delete r";
+                        var query = "Match (k:Recenzija)-[r]-() WHERE id(k)=$id delete k,r";
                         var parameters=new{id};
                         var cursor = await tx.RunAsync(query,parameters);
                         return cursor;

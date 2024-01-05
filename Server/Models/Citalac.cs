@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+
 
 namespace Models
 {
@@ -14,14 +16,8 @@ namespace Models
         public required string Sifra{get; set;}
 
         public string? BrojTelefona {get;set;}
-
-        public DateOnly DatumRodjenja{get; set;}
-
-        public string? Slika {get; set;}
-
-        public List<Knjiga>? Knjige {get; set;}
         
-
+        public string? Slika {get; set;}
         
     }
 }

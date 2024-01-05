@@ -24,7 +24,7 @@ namespace Controllers;
                     ModelState.AddModelError("KorisnickoIme","Korisnicko ime mora da ima vecu duzinu od 0");
                 if(Citalac.Email.Length<=0|| Regex.IsMatch(Citalac.Email,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")==false)
                     ModelState.AddModelError("Email","Email ne moze da bude prazan i mora da bude u formatu emaila");
-                if(Citalac.Sifra.Length<=8)
+                if(Citalac.Sifra.Length<=7)
                     ModelState.AddModelError("Sifra","Sifra mora da bude veca od 0");
                 if (!ModelState.IsValid)
                     return BadRequest("ModelState");

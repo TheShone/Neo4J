@@ -9,15 +9,14 @@ namespace Models
         public required string Ime {get; set;}
 
         public required string Prezime {get; set;}
-
+        [JsonConverter(typeof(DateOnlyConverter))]
         public DateOnly DatumRodjenja {get; set;}
-
+        [JsonConverter(typeof(DateOnlyConverter))]
         public DateOnly? DatumSmrti {get; set;}
 
         public string? Nacionalnost {get; set;}
 
         public string? Fotografija {get; set;}
 
-        public List<Knjiga>? Knjige {get; set;}
     }
 }

@@ -15,6 +15,5 @@ namespace Models
 
         public string? Email{get; set;}
 
-        public List<Knjiga>? ObjavljeneKnjige {get;set;}
     }
 }

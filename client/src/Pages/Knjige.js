@@ -27,11 +27,14 @@ const Knjige = () =>
     const [readyy,setReadyy] = useState(false);
     const [obrisano,setObrisano]=useState(false);
     const [photo,setPhoto]=useState("");
+    const [addovano,setAdovano]=useState(false);
+
     const config = {
         headers: {Authorization: `Bearer ${Cookies.get("Token")}`}
     }
     useEffect(()=>{
-        
+            setAdovano(false);
+            setObrisano(false);
             axios.get('/Knjiga/GetKnjige',config)
             .then((response)=> {
                 setCurrentItems(response.data);
@@ -61,7 +64,7 @@ const Knjige = () =>
                 setStringGreska(`Error: + ${err.message}`);
             })
         
-    },[])
+    },[obrisano,addovano])
     const addKnjigu = async (e)=>
     {
         e.preventDefault();
@@ -109,7 +112,12 @@ const Knjige = () =>
                       brojnoStanje: available,
                       slika:photourl,
                     });
-                    if (response.status !== 200) {
+                    if (response.status === 200) {
+                      setAdovano(true);
+                    }
+                    else {
+                      setStringGreska("Greska pri dodavanju.");
+                      setShowAlert(true);
                       console.log("Server returned status code " + response.status);
                     }
                   } catch (error) {

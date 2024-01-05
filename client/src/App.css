@@ -681,7 +681,14 @@ p {
     flex: 0 0 calc(100% - 40px); 
   }
 }
-
+.review-card {
+  background-color: rgba(17, 25, 40, 0.25);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  padding: 20px;
+  filter: drop-shadow(0 30px 10px rgba(0, 0, 0, 0.125));
+  flex: 0 0 calc(10% - 40px); /* Adjust the width as needed for 3 items per row */
+}
 .pisac-card1 {
   background-color: rgba(17, 25, 40, 0.25);
   border-radius: 12px;

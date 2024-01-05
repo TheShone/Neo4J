@@ -20,13 +20,5 @@ namespace Models
 
         public string Slika {get; set;}
 
-        public List<Citalac>? Citaoci{get; set;}
-
-        public List<Recenzija>? Recenzije{get; set;}
-
-        public List<Nagrada>? Nagrade{get; set;}
-
-        public List<Izdavanje>? Izdata{get; set;}
-
     }
 }

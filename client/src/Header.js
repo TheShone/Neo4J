@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "./UserContext";
 import Cookies from "js-cookie";
+import { Navigate } from "react-router-dom";
+
 
 const Header = () => {
   const config = {
@@ -15,7 +17,7 @@ const Header = () => {
     axios
       .post("/Login/LogOut", {}, config)
       .then(() => {
-        setRedirect("/");
+        setRedirect(true);
         setUser(null);
       })
       .catch((err) => {
@@ -33,7 +35,7 @@ const Header = () => {
         <ul>
           <li><a class="nav-link scrollto active" ><Link to="/knjige">Knjige</Link></a></li>
           {user?.role==="Citaoc"&&
-            <li><a class="nav-link scrollto" >Iznajmljene</a></li>
+            <li><a class="nav-link scrollto" ><Link to="/iznajmljeneKnjige">Iznajmljene</Link></a></li>
           }
           {user?.role==='Admin' &&
             <li><a class="nav-link scrollto"><Link to="/pisci">Pisci</Link></a></li>
@@ -43,9 +45,6 @@ const Header = () => {
           }
           {user?.role==='Admin' &&
             <li><a class="nav-link scrollto"><Link to="/zanri">Zanri</Link></a></li>
-          }
-          {user?.role==='Admin' &&
-            <li><a class="nav-link scrollto"><Link to="/nagrade">Nagrade</Link></a></li>
           }
           {user &&
             <li><a class="nav-link scrollto"><Link to="/profil">Profil</Link></a></li>

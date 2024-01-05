@@ -21,14 +21,82 @@ const Knjiga = () =>
     const [writerName,setWriterName]=useState("");
     const [writerSurName,setWriterSurName]=useState("");
     const [genre,setGenre]=useState("");
+    const {user,ready} = useContext(UserContext);
     const [publisher,setPublisher]=useState("");
     const [item,setItem]=useState("");
     const [photo,setPhoto]=useState("");
+    const [reader,setReader]=useState("");
     const [pages,setPages]=useState("");
     const [available,setAvailable]=useState("");
     const [updatedKnjiga,setUpdatedKnjiga]=useState(false);
+    const [mark,setMark]=useState("");
+    const [addovanComm,setAddovanComm]=useState(false);
+    const [comm,setComm]=useState("");
+    const [reviews,setReviews]=useState([]);
+    const [deleted,setDeleted]=useState(false);
+    
     const handleClose = () => setShowAlert(false);
     const { id } = useParams();
+    const iznajmiKnjigu = async (e) =>{
+      e.preventDefault();
+      try{
+        const currentDate = new Date();
+        const response = await axios.post(`/Izdavanje/AddIzdavanje/${user.id}/${item.id}`,
+        {
+            vremeIzdavanja:currentDate.toISOString().split('T')[0],
+            status:"Aktivno"
+        });
+          if (response.status === 200) {
+            try{
+              var flag=true;
+              const response = await axios.put(`/Knjiga/UpdateKnjigaIznajmljivanje/${id}/${flag}`,config);
+                if (response.status === 200) {
+                  setUpdatedKnjiga(!updatedKnjiga)
+                } else {
+                  setStringGreska("Greska pri izmeni.");
+                  setShowAlert(true);
+                  console.log("Server returned status code " + response.status);
+                  console.log(response.data);
+                }
+          }
+          catch(err)
+          {
+              console.log(err);
+          }
+          } else {
+            setStringGreska("Greska pri dodavanju recenzije.");
+            setShowAlert(true);
+            console.log("Server returned status code " + response.status);
+            console.log(response.data);
+          }
+      }
+      catch(err)
+      {
+         console.log(err);
+      }
+    }
+    const handleKomentar = async (e)=>{
+      e.preventDefault();
+      try{
+        const response = await axios.post(`/Recenzija/AddRecenzija/${user.id}/${item.id}`,
+        {
+            ocena:mark,
+            komentar:comm 
+        });
+          if (response.status === 200) {
+            setAddovanComm(!addovanComm);
+          } else {
+            setStringGreska("Greska pri dodavanju recenzije.");
+            setShowAlert(true);
+            console.log("Server returned status code " + response.status);
+            console.log(response.data);
+          }
+      }
+      catch(err)
+      {
+         console.log(err);
+      }
+    }
     const izmeni =(e)=>{
         e.preventDefault();
         setUpdateFlag(!updateFlag)
@@ -42,6 +110,22 @@ const Knjiga = () =>
           marginBottom: '20px',
           marginLeft:'50px'
       };
+      const handleDelete = async (idRecenzije) =>{
+          try{
+            const response = await axios.delete(`/Recenzija/DeleteRecenziju/${idRecenzije}`,config);
+              if (response.status === 200) {
+                setDeleted(!deleted);
+              } else {
+                setStringGreska("Greska pri brisanju.");
+                setShowAlert(true);
+                console.log("Server returned status code " + response.status);
+              }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+      }
       const updateStanje = async () =>{
         try{
             const response = await axios.put(`/Knjiga/UpdateKnjigaStanje/${id}/${available}`,config);
@@ -78,8 +162,17 @@ const Knjiga = () =>
             .catch((err)=>{
                 console.log(err);
             })
+            axios.get(`/Recenzija/GetRecenzijeZaKnjigu/${id}`)
+            .then((response)=>{
+              setReviews(response.data);
+              console.log("Knjiga sa idjem "+ id);
+              console.log(reviews);
+            })
+            .catch((err)=>{
+              console.log(err);
+            })
         }
-    },[updatedKnjiga]);
+    },[updatedKnjiga,addovanComm,deleted]);
     return(
         <>
             <Modal
@@ -234,7 +327,28 @@ const Knjiga = () =>
               Broj primeraka
             </label>
           </div>
+          {user?.role==="Citaoc" && available>0 &&
+            <div className="relative z-0 w-full mb-5 group">
+            <button
+              type="submit"
+              onClick={iznajmiKnjigu}
+              className="text-white bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:bg-yellow-400"
+            >Iznajmi</button>
+          </div>
+          }
         </div>
+        {user?.role!="Admin" && 
+          <div className="relative z-0 w-full mb-5 group">
+          
+          <h3
+            className=" text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Recenzije:
+          </h3>
+        </div>
+        }
+        {user?.role ==="Admin" &&
+        <>
         <button
           type="submit"
           className="text-white bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:bg-yellow-400"
@@ -250,6 +364,72 @@ const Knjiga = () =>
         >
           Sacuvaj
         </button>
+        </>
+        }
+        {user?.role === "Citaoc" &&
+          <div className="pisac-card">
+            <div className="form-group row padding">
+                  <label className="col-4 col-form-label" >Ocena:</label> 
+                  <div className="col-8">
+                    <input
+                        value={mark}
+                        onChange={(e) => setMark(e.target.value)}
+                        type="number"
+                        name="floating_first_name"
+                        id="floating_first_name"
+                        className="form-control"
+                        placeholder=" "
+                        min="1"
+                        max="5"
+                      />
+                  </div>
+                </div>
+                <div className="form-group row padding">
+                  <label className="col-4 col-form-label" >Komentar:</label> 
+                  <div className="col-8">
+                    <input
+                        value={comm}
+                        onChange={(e) => setComm(e.target.value)}
+                        type="text"
+                        name="floating_first_name"
+                        id="floating_first_name"
+                        className="form-control"
+                        placeholder=" "
+                        
+                      />
+                  </div>
+                </div>
+                <button className="btn fill" style={{ marginLeft: "280px" }} onClick={handleKomentar}>Dodaj</button>
+          </div>
+        }
+        {reviews.map((item,ind)=>(
+            <div className="review-card">
+              <div className="form-group row padding">
+                    <label className="col-4 col-form-label" >Ocena:</label> 
+                    <div className="col-8">
+                      <label className="col-4 col-form-label">{item.Ocena}</label>
+                    </div>
+              </div>
+                <div className="form-group row padding">
+                  <label className="col-4 col-form-label" >Komentar:</label> 
+                  <div className="col-8">
+                    <label className="col-4 col-form-label">{item.Komentar}</label>
+                  </div>
+                </div>
+                <div className="form-group row padding">
+                  <label className="col-4 col-form-label" >Čitaoc:</label> 
+                  <div className="col-8">
+                    <label className="col-4 col-form-label">{item.citalac.KorisnickoIme}</label>
+                  </div>
+                </div>
+                {item.citalac.KorisnickoIme===user.korisnickoIme&&
+                  <button className="btn fill" style={{ marginLeft: "280px" }} onClick={()=>handleDelete(item.id)}>Obrisi</button>
+                }
+          </div>
+
+        ))
+
+        }
       </form>
     </div>
     </>

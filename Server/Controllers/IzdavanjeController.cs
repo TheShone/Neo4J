@@ -11,9 +11,9 @@ namespace Controllers;
         {
             _driver = GraphDatabase.Driver("neo4j+s://8528ea53.databases.neo4j.io", AuthTokens.Basic("neo4j", "7rPOZqbSx3SRB6Q1rFvG1hcMKcc4qolAKoB--c-px6o"));
         }
-        [Route("AddIzdavanje")]
+        [Route("AddIzdavanje/{idCitaoca}/{idKnjige}")]
         [HttpPost]
-        public async Task<IActionResult> AddIzdavanje([FromBody] Izdavanje Izdavanje)
+        public async Task<IActionResult> AddIzdavanje(int idCitaoca,int idKnjige,[FromBody] Izdavanje Izdavanje)
         {
             try{
                 using(var session = _driver.AsyncSession())
@@ -29,18 +29,15 @@ namespace Controllers;
                         {
                             var record = resultatList[0];
                             var createdNodeId = record["i"].As<INode>().Id;
-                            if (Izdavanje.Knjiga != null)
-                            {
-                                var relationQuery = "MATCH (i:Izdavanje), (k:Knjiga) WHERE ID(i) = $izdavanjeId AND k.Naslov = $naslov MERGE (k)-[:IZDATA]->(i)";
-                                var relationParameters = new { izdavanjeId = createdNodeId, naslov = Izdavanje.Knjiga.Naslov };
-                                await tx.RunAsync(relationQuery, relationParameters);
-                            }
-                            if(Izdavanje.Citalac!= null)
-                            {
-                                var relationQuery = "MATCH (i:Izdavanje), (c:Citalac) WHERE ID(k) = $izdavanjeID AND c.Email = $email MERGE (i)-[:IZNAJMLJENA_OD_STRANE]->(c)";
-                                var relationParameters = new { izdavanjeID = createdNodeId, email = Izdavanje.Citalac.Email };
-                                await tx.RunAsync(relationQuery, relationParameters);
-                            }
+                            var relationQuery = "MATCH (i:Izdavanje), (k:Knjiga) WHERE id(i) = $izdavanjeId AND id(k) = $id MERGE (k)-[:IZDATA]->(i)";
+                            var relationParameters = new { izdavanjeId = createdNodeId, id =idKnjige };
+                            await tx.RunAsync(relationQuery, relationParameters);
+                        
+                        
+                            var relationQuery1 = "MATCH (i:Izdavanje), (c:Citalac) WHERE id(i) = $izdavanjeID AND id(c) = $id MERGE (i)-[:IZNAJMLJENA_OD_STRANE]->(c)";
+                            var relationParameters1 = new { izdavanjeID = createdNodeId, id = idCitaoca };
+                            await tx.RunAsync(relationQuery1, relationParameters1);
+                            
                             
                         }
                         
@@ -57,6 +54,58 @@ namespace Controllers;
                 }
             }
             catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetIznajmljenihKnjigaZaCitaoca/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetIznajmljenihKnjigaZaCitaoca(int id)
+        {
+            try
+            {
+                using (var session = _driver.AsyncSession())
+                {
+                    var result = await session.ExecuteReadAsync(async tx =>
+                    {
+                        var query = "MATCH (i:Izdavanje)-[:IZNAJMLJENA_OD_STRANE]->(c:Citalac), (k:Knjiga)-[:IZDATA]->(i) WHERE id(c)=$id return i,k";
+                        var parameters = new { id };
+                        var cursor = await tx.RunAsync(query, parameters);
+                        var records = await cursor.ToListAsync();
+
+                        var iznajme = new List<Dictionary<string, object>>();
+                        foreach (var record in records)
+                        {
+                            var iznajmeNode = record["i"].As<INode>();
+                            var knjigaNode = record["k"].As<INode>();
+
+                            var iznajmeProperties = iznajmeNode.Properties;
+                            var knjigaProperties = knjigaNode.Properties;
+
+                            var recenzijaDictionary = new Dictionary<string, object>(iznajmeProperties)
+                            {
+                                { "id", iznajmeNode.Id },
+                                { "knjigaId",knjigaNode.Id},
+                                { "knjiga", knjigaProperties }
+                            };
+
+                            iznajme.Add(recenzijaDictionary);
+                        }
+
+                        return iznajme;
+                    });
+
+                    if (result != null)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest("Greska pri pribavljanju recenzija za knjigu");
+                    }
+                }
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -128,7 +177,7 @@ namespace Controllers;
                 using(var session =  _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx=>{
-                        var query = "Match (i:Izdavanje) WHERE id(i)=$id delete i";
+                        var query = "Match (i:Izdavanje)-[r]-() WHERE id(i)=$id delete i,r";
                         var parameters=new{id};
                         var cursor = await tx.RunAsync(query,parameters);
                         return cursor;

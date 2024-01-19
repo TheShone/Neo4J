@@ -25,7 +25,6 @@ namespace Controllers;
 
                         var cursor =  await tx.RunAsync(query, parameters);
                         var resultatList = await cursor.ToListAsync();
-                        Console.WriteLine(Recenzija);
 
                         if(resultatList.Count>0)
                         {

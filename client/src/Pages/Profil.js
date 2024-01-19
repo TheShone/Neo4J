@@ -8,6 +8,7 @@ import { UserContext } from "../UserContext";
 import { storage } from "./Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Modal } from "react-bootstrap";
+import { Navigate } from "react-router-dom";
 
 const Profil = () =>{
     const {user,ready} = useContext(UserContext);
@@ -35,7 +36,6 @@ const Profil = () =>{
       {
         return;
       }
-        console.log(user);
         if(user?.role==="Admin")
         {
             axios.get(`/Admin/GetAdmina/${user?.id}`)
@@ -52,7 +52,6 @@ const Profil = () =>{
                 setBirthDate(birthDateString);
                 setNumber(response.data.BrojTelefona);
                 setPhoto(response.data.Slika);
-                console.log(photo);
             })
             .catch((err)=>
             {
@@ -61,7 +60,6 @@ const Profil = () =>{
         }
         else if(user?.role==="Citaoc")
         {
-          console.log("Ajmo citaoc");
             axios.get(`/Citalac/GetCitaoca/${user?.id}`)
             .then((response)=>{
                 setItem(response.item);
@@ -91,8 +89,6 @@ const Profil = () =>{
     const updateProfil = async (e) => {
       e.preventDefault();
       try{
-            console.log("Usao");
-            console.log(user.role);
             const validationErrors = {};
             if (name.length <= 0) {
                 validationErrors.name = "Ime treba da ima više od 0 karaktera";

@@ -33,7 +33,7 @@ const Login = () => {
     }
   }
   if (redirect) {
-    return <Navigate to={"/knjige"} />;
+    return <Navigate to={"/"} />;
   }
   const handleClose = () => setShowNeuspesno(false);
 

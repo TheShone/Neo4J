@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import Cookies from "js-cookie";
 import AdminIzdavaciListItem from "./AdminIzdavaciListItem";
+import { Navigate } from "react-router-dom";
+
 const AdminIzdavaci = () =>{
     const handleClose = () => setShowAlert(false);
     const {user,ready} = useContext(UserContext);
@@ -90,6 +92,7 @@ const AdminIzdavaci = () =>{
     }
     }
     return(
+      user?.role==='Admin' ? (
         <>
             <Modal
           show={showAlert}
@@ -193,6 +196,9 @@ const AdminIzdavaci = () =>{
     </div>
     </div>
     </>
+    ) : (
+      <Navigate to={"/"}/>
+    )
     );
 }
 export default AdminIzdavaci;

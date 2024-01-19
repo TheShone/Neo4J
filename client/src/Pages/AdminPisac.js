@@ -8,6 +8,7 @@ import { UserContext } from "../UserContext";
 import { storage } from "./Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Modal } from "react-bootstrap";
+import { Navigate } from "react-router-dom";
 
 const AdminPisac = () =>{
     const config = {
@@ -123,6 +124,7 @@ const AdminPisac = () =>{
         marginLeft:'50px'
     };
     return(
+      user?.role==='Admin' ? (
       <>
             <Modal
           show={showAlert}
@@ -257,6 +259,9 @@ const AdminPisac = () =>{
       </form>
     </div>
     </>
+    ) : (
+      <Navigate to={"/"}/>
+    )
     );
 }
 export default AdminPisac;

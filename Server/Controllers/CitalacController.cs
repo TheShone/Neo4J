@@ -157,7 +157,7 @@ namespace Controllers;
                         var query = "Match (c:Citalac) WHERE id(c)=$id return c";
                         var parameters = new {id};
                         var cursor = await tx.RunAsync(query,parameters);
-                        var records = await cursor.ToListAsync(); // Materialize the result
+                        var records = await cursor.ToListAsync(); 
                         if (records.Count > 0)
                         {
                             var record = records[0];

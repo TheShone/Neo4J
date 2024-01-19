@@ -43,7 +43,7 @@ public class AdminController:ControllerBase
                             var query = "CREATE (a:Admin) SET a=$admin RETURN a";
                             var parameters= new { admin=Admin};
                             var cursor = await tx.RunAsync(query,parameters);
-                            var records = await cursor.ToListAsync(); // Odmah koristi rezultate
+                            var records = await cursor.ToListAsync();
                             return records;
                         }
                         else
@@ -176,7 +176,7 @@ public class AdminController:ControllerBase
                     var query = "MATCH (a:Admin) WHERE id(a)=$id DELETE a";
                     var parameters=new {id};
                     var cursor=await tx.RunAsync(query,parameters);
-                    return cursor.ConsumeAsync(); // Consume the result to get the summary
+                    return cursor.ConsumeAsync(); 
     
                 });
                 

@@ -28,7 +28,7 @@ const Header = () => {
     <header id="header" class="fixed-top ">
     <div class="container d-flex align-items-center justify-content-lg-between my-1">
 
-      <h1 class="logo me-auto me-lg-0"><a><Link to="/knjige">Biblioteka</Link></a></h1>
+      <h1 class="logo me-auto me-lg-0"><a><Link to="/">Biblioteka</Link></a></h1>
       <a href="index.html" class="logo me-auto me-lg-0"><img src="assets/img/logo.png" alt="" class="img-fluid"/></a>
 
       <nav id="navbar" class="navbar order-last order-lg-0">
@@ -53,10 +53,10 @@ const Header = () => {
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
       {!user &&
-            <li><a className="get-started-btn scrollto" ><Link to="/login">LogIn</Link></a></li>
+            <li><Link to="/login"><a className="get-started-btn scrollto" >LogIn</a></Link></li>
       }
       {user &&
-        <li><a className="get-started-btn scrollto" onClick={handleLogout}><Link to="/">LogOut</Link></a></li>
+        <li><Link to="/"><a className="get-started-btn scrollto" onClick={handleLogout}>LogOut</a></Link></li>
       }
 
     </div>

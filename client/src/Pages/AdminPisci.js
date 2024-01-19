@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import Cookies from "js-cookie";
 import AdminPisciListItem from "./AdminPisciListItem";
+import { Navigate } from "react-router-dom";
 
 const Pisci = () =>{
   const handleClose = () => setShowAlert(false);
@@ -93,6 +94,10 @@ const Pisci = () =>{
           });
         });
       }
+      else{
+        setStringGreska("Morate uneti sliku.");
+        setShowAlert(true);
+      }
     }
     catch(err)
     {
@@ -101,6 +106,7 @@ const Pisci = () =>{
 
   }
     return(
+      user?.role==='Admin' ? (
       <>
             <Modal
           show={showAlert}
@@ -421,6 +427,9 @@ const Pisci = () =>{
     </div>
     </div>
     </>
+    ) : (
+      <Navigate to={"/"}/>
     )
+  )
 }
 export default Pisci;

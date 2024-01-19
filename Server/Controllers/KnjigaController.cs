@@ -325,7 +325,6 @@ namespace Controllers;
                             var authorProperties = ConvertToDictionary(authorNode.Properties);
                             var genreProperties = ConvertToDictionary(genreNode.Properties);
                             var publisherProperties = ConvertToDictionary(publisherNode.Properties);
-                            Console.WriteLine(authorProperties["DatumRodjenja"]);
                             ConvertDateOnlyToString(authorProperties, "DatumRodjenja");
                             ConvertDateOnlyToString(authorProperties, "DatumSmrti");
 
@@ -374,12 +373,10 @@ namespace Controllers;
             {
                 if (properties[propertyName] is DateOnly dateOnly)
                 {
-                    Console.WriteLine("kurac1");
                     properties[propertyName] = dateOnly.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
-                else if (properties[propertyName] is DateTime dateTime) // Dodato za DateTime proveru
+                else if (properties[propertyName] is DateTime dateTime) 
                 {
-                    Console.WriteLine(properties[propertyName]);
                     properties[propertyName] = dateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
             }

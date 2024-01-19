@@ -187,8 +187,7 @@ namespace Controllers;
         {
             try
             {
-                var token = HttpContext.Request.Headers["Authorization"]; // Log the received token
-                Console.WriteLine($"Received Token: {token}");
+                var token = HttpContext.Request.Headers["Authorization"]; 
 
                 Response.Cookies.Delete("Token");
                 return Ok("Uspesno ste izlogovani!");

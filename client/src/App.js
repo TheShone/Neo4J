@@ -14,6 +14,7 @@ import AdminIzdavaci from './Pages/AdminIzdavaci.js';
 import AdminZanr from './Pages/AdminZanr.js';
 import Knjiga from './Pages/Knjiga.js';
 import IznajmljeneKnjige from './Pages/IznajmljeneKnjige.js';
+import Index from './Pages/Index.js';
 axios.defaults.baseURL = "http://localhost:5002";
 axios.defaults.withCredentials = true;
 function App() {
@@ -21,6 +22,7 @@ function App() {
     <UserContextProvider>
     <Routes>
       <Route path="/" element={<Layout/>}>
+        <Route index element={<Index/>} />
         <Route path = "/registration" element={<Register/>}/>
         <Route path = "/knjige" element={<Knjige/>}/>
         <Route path="/login" element={<Login/>}></Route>

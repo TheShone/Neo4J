@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import Cookies from "js-cookie";
 import AdminZanrListItem from "./AdminZanrListItem";
+import { Navigate } from "react-router-dom";
+
 const AdminZanr = () =>{
     const handleClose = () => setShowAlert(false);
     const {user,ready} = useContext(UserContext);
@@ -73,6 +75,7 @@ const AdminZanr = () =>{
     }
     }
     return(
+      user?.role==='Admin' ? (
         <>
             <Modal
           show={showAlert}
@@ -130,6 +133,9 @@ const AdminZanr = () =>{
     </div>
     </div>
     </>
+    ) : (
+      <Navigate to={"/"}/>
+    )
     );
 }
 export default AdminZanr;

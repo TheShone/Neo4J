@@ -145,12 +145,10 @@ const Profil = () =>{
                           setStringGreska("Greska pri izmeni.");
                           setShowAlert(true);
                           console.log("Server returned status code " + response.status);
-                          console.log(response.data);
                         }
                       } catch (error) {
                         setStringGreska("Greska.");
                         setShowAlert(true);
-                        console.log(error)
                         console.log("Error:", error.message);
                       }
                     });
@@ -182,7 +180,6 @@ const Profil = () =>{
                           setUpdatedUser(!updatedUser)
                         } else {
                           console.log("Server returned status code " + response.status);
-                          console.log(response.data);
                           setStringGreska("Greska.");
                           setShowAlert(true);
                         }
@@ -217,7 +214,7 @@ const Profil = () =>{
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Greska pri izmeni</Modal.Title>
+            <Modal.Title>Greska</Modal.Title>
           </Modal.Header>
           <Modal.Body>{stringGreska}</Modal.Body>
           <Modal.Footer>

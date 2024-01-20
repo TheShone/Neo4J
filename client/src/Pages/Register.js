@@ -71,10 +71,9 @@ const Register = () => {
                 slika: photourl,
               });
               if (response.status === 200) {
-                navigate("/");
+                navigate("/login");
               } else {
                 console.log("Server returned status code " + response.status);
-                console.log(response.data);
               }
             } catch (error) {
               if (error.response && error.response.status === 400) {

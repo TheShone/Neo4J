@@ -56,7 +56,6 @@ const Knjiga = () =>
                   setStringGreska("Greska pri izmeni.");
                   setShowAlert(true);
                   console.log("Server returned status code " + response.status);
-                  console.log(response.data);
                 }
           }
           catch(err)
@@ -64,10 +63,9 @@ const Knjiga = () =>
               console.log(err);
           }
           } else {
-            setStringGreska("Greska pri dodavanju recenzije.");
+            setStringGreska("Greska");
             setShowAlert(true);
             console.log("Server returned status code " + response.status);
-            console.log(response.data);
           }
       }
       catch(err)
@@ -89,7 +87,6 @@ const Knjiga = () =>
             setStringGreska("Greska pri dodavanju recenzije.");
             setShowAlert(true);
             console.log("Server returned status code " + response.status);
-            console.log(response.data);
           }
       }
       catch(err)
@@ -136,7 +133,6 @@ const Knjiga = () =>
                 setStringGreska("Greska pri izmeni.");
                 setShowAlert(true);
                 console.log("Server returned status code " + response.status);
-                console.log(response.data);
               }
         }
         catch(err)
@@ -165,8 +161,6 @@ const Knjiga = () =>
             axios.get(`/Recenzija/GetRecenzijeZaKnjigu/${id}`)
             .then((response)=>{
               setReviews(response.data);
-              console.log("Knjiga sa idjem "+ id);
-              console.log(reviews);
             })
             .catch((err)=>{
               console.log(err);

@@ -280,7 +280,7 @@ namespace Controllers;
                 using(var session =  _driver.AsyncSession())
                 {
                     var result = await session.ExecuteWriteAsync(async tx=>{
-                        var query = "MATCH (k:Knjiga)-[r]-() WHERE id(k)=$id DELETE k, r";
+                        var query = "MATCH (k:Knjiga) WHERE id(k)=$id NODETACH DELETE k";
                         var parameters=new{id};
                         var cursor = await tx.RunAsync(query,parameters);
                         return cursor;

@@ -38,7 +38,6 @@ const IznajmljeneKnjige = () =>{
             axios.get(`/Izdavanje/GetIznajmljenihKnjigaZaCitaoca/${user.id}`,config)
             .then((response)=> {
                 setCurrentItems(response.data);
-                console.log(response.data);
             })
             .catch((err)=>{
                 setStringGreska(`Error: + ${err.message}`);
@@ -66,7 +65,7 @@ const IznajmljeneKnjige = () =>{
         <div style={{ marginTop: "130px"}}>
             <div id="glavni">
                 <div className="pisci-container">
-                {currentItems.map((item, ind) => (
+                {currentItems.length>0 && currentItems.map((item, ind) => (
                     <IznajmljeneKnjigeListItem
                     item={item}
                     key={ind}
@@ -80,6 +79,11 @@ const IznajmljeneKnjige = () =>{
                     />
                 ))}
                 </div>
+                {currentItems.length==0 && (
+                    <div className="pisac-card">
+                        <h1>Nemate iznajmljenih knjiga</h1>
+                    </div>
+                )}
             </div>
         </div>
         </>

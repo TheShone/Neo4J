@@ -52,6 +52,7 @@ namespace Controllers;
                                         BrojTelefona = (string?)nodeProperties["BrojTelefona"],
                                         Slika = (string?)nodeProperties["Slika"],
                                     };
+                                    
                                 }
                                 var query1 = "Match (a:Admin) WHERE a.Email=$email return a";
                                 var parameters1 = new {email};

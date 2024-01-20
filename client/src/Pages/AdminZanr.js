@@ -59,7 +59,6 @@ const AdminZanr = () =>{
             });
             if (response.status !== 200) {
             console.log("Server returned status code " + response.status);
-            console.log(response.data);
             }
         } catch (error) {
             setStringGreska("Greska pri dodavanju.");
@@ -84,7 +83,7 @@ const AdminZanr = () =>{
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Neuspešna Dodavanje Izdavaca</Modal.Title>
+            <Modal.Title>Greška</Modal.Title>
           </Modal.Header>
           <Modal.Body>{stringGreska}</Modal.Body>
           <Modal.Footer>

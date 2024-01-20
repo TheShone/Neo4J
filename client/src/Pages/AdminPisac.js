@@ -56,7 +56,6 @@ const AdminPisac = () =>{
     const updatePisac = async (e) =>{
         e.preventDefault();
         try{
-            console.log("uso");
             const validationErrors = {};
             if (name.length <= 0) {
                 validationErrors.name = "Ime treba da ima više od 0 karaktera";
@@ -133,7 +132,7 @@ const AdminPisac = () =>{
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Neuspešna Registracija</Modal.Title>
+            <Modal.Title>Greška</Modal.Title>
           </Modal.Header>
           <Modal.Body>{stringGreska}</Modal.Body>
           <Modal.Footer>

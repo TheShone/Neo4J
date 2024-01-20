@@ -26,8 +26,6 @@ const AdminZanrListItem = (
             setObrisano(true);
         })
         .catch((err) => {
-            console.log(indeks);
-            console.log(err.message);
             setStringGreska(`Error: + ${err.message}`);
         });
     }

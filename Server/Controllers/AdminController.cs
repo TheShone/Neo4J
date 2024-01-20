@@ -173,7 +173,7 @@ public class AdminController:ControllerBase
             using(var session = _driver.AsyncSession())
             {
                 var result = await session.ExecuteWriteAsync(async tx=>{
-                    var query = "MATCH (a:Admin) WHERE id(a)=$id DELETE a";
+                    var query = "MATCH (a:Admin) WHERE id(a)=$id NODETACH DELETE a";
                     var parameters=new {id};
                     var cursor=await tx.RunAsync(query,parameters);
                     return cursor.ConsumeAsync(); 

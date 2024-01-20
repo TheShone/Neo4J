@@ -16,6 +16,8 @@ namespace Models
         public required string Sifra{get; set;}
 
         public string? BrojTelefona {get;set;}
+
+        public DateOnly? DatumRodjenja{get; set;}
         
         public string? Slika {get; set;}
         

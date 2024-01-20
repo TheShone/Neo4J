@@ -84,10 +84,9 @@ const Pisci = () =>{
               });
               if (response.status !== 200) {
                 console.log("Server returned status code " + response.status);
-                console.log(response.data);
               }
             } catch (error) {
-                setStringGreska("Greska pri izmeni.");
+                setStringGreska("Greska pri dodavanju.");
                 setShowAlert(true);
                 console.log("Error:", error.message);
             }

@@ -35,8 +35,6 @@ const IznajmljeneKnjigeListItem = ({
             }
         })
         .catch((err) => {
-            console.log(indeks);
-            console.log(err);
             setStringGreska(`Error: + ${err.message}`);
         });
     }

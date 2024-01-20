@@ -133,7 +133,7 @@ namespace Controllers;
             using(var session = _driver.AsyncSession())
             {
                 var result = await session.ExecuteWriteAsync(async tx=>{
-                    var query = "MATCH (p:Pisac) WHERE id(p)=$id DELETE p";
+                    var query = "MATCH (p:Pisac) WHERE id(p)=$id NODETACH DELETE p";
                     var parameters=new {id};
                     var cursor=await tx.RunAsync(query,parameters);
                     return cursor.ConsumeAsync(); 

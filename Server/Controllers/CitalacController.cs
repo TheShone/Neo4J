@@ -124,7 +124,7 @@ namespace Controllers;
                 {
                     var result = await session.ExecuteWriteAsync(async tx=>
                     {
-                        var query = "MATCH (c:Citalac) WHERE id(c)=$id NODETACH DELETE c";
+                        var query = "MATCH (c:Citalac)-[r]-() WHERE id(c)=$id DELETE c,r";
                         var parameters = new {id};
                         var cursor = await tx.RunAsync(query,parameters);
                         return cursor;
